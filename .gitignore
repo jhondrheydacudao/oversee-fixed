@@ -128,3 +128,11 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+public/assets/logo.png
+hydrapanel.db
+sessions.db
+tmp/
+bs-config.json
+plugins/plugins.json
+daemon

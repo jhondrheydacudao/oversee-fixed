@@ -1,0 +1,215 @@
+<%- include('components/template') %>
+<main class="flex-grow container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center w-full mx-auto pb-4">
+      <!-- Welcome text and subtext -->
+<div class="flex flex-col">
+  <h1 class="text-xl font-semibold mb-0.5 heavy">Instances</h1>
+  <p class="text-gray-400 text-md">Overview of your servers on <%= name %>.</p>
+</div>
+
+<!-- Actions -->
+<div class="flex items-center gap-3"> <!-- Moved button and server list directly under "Instances" -->
+  <!-- Button -->
+  <% if (req.user.admin === true) { %>
+   <!-- Actions -->
+   <div class="flex items-center gap-3">
+<div class="relative inline-block" x-data="{ open: false }">
+<button @click="open = !open" class="hover:scale-95 flex items-center justify-center h-11 gap-2 px-5 text-sm font-medium text-white transition-all duration-200 rounded-full shadow bg-indigo-500 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-800 focus:ring-offset-2 ring-offset-gray-200 hover:shadow-none">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6 13.5V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 9.75V10.5" />
+</svg>
+<span>Filter</span>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="size-4 transition-transform duration-200" :class="open ? 'rotate-180' : ''">
+<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+</svg>
+</button>
+
+<div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95 -translate-y-2" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100 translate-y-0" x-transition:leave-end="opacity-0 scale-95 -translate-y-2" @click.outside="open = false" class="absolute right-0 mt-2 w-48 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg" style="display: none;">
+<div class="py-2">
+  <% if (req.query.see == 'other') { %>
+<a href="/instances" class="flex items-center gap-2 px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 transition-colors">
+  <%= req.translations.showingYourInstances %>
+</a>
+<% } else { %>
+<a href="/instances?see=other" class="flex items-center gap-2 px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 transition-colors">
+  <%= req.translations.seeAllInstances %>
+</a>
+<% } %>
+</div>
+</div>
+</div>
+</div>
+</div>
+  <% } %>
+</div>
+<!-- Servers List Header -->
+<div class="px-6 py-3 mt-6 grid grid-cols-12 gap-4 flex flex-col items-center text-sm font-medium text-white/50">
+  <div class="col-span-2">Server</div>
+  <div class="col-span-2">Status</div>
+  <div class="col-span-2">Memory</div>
+  <div class="col-span-2">CPU</div>
+</div>
+
+      
+        <!-- Instances Section -->
+        <div>
+          <% instances.forEach(function (instance) { %>
+            <div class="server-row mb-4 bg-white/5 rounded-2xl hover:bg-white/10 border-2 border-dashed border-transparent hover:border-white/5 transition px-6 py-4 grid grid-cols-12 gap-4 items-center cursor-pointer"
+            id="instancesContainer" 
+            data-instance-id="<%= instance.Id %>"
+            onclick="window.location.href='../instance/<%= instance.Id %>'"
+                    
+                    <!-- Server Name & Node -->
+                    <div class="col-span-2">
+                        <div class="font-medium text-white"><%= instance.Name %></div>
+                    </div>
+
+                    <!-- Status -->
+
+                    <div class="col-span-2 ">
+                        <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-zinc-500/20 text-zinc-300">
+                            <div data-status-bg class="size-2 rounded-full bg-zinc-400 mr-2 status-indicator"></div>
+                            <span data-status class="status-text">Connecting...</span>
+                        </div>
+                    </div>
+
+                    <!-- Memory Usage -->
+                    <div class="col-span-2">
+                        <div class="flex  items-center gap-2">
+                            <div class="w-full bg-white/10 rounded-full h-1.5">
+                                <div data-ram-usage class="bg-indigo-500 h-1.5 rounded-full transition-all" style="width: 0%"></div>
+                            </div>
+                            <span data-status class="text-xs">Connecting...</span>
+                        </div>
+                    </div>
+
+                    <!-- CPU Usage -->
+                    <div class="col-span-2">
+                        <div class="flex  items-center gap-2">
+                            <div class="w-full bg-white/10 rounded-full h-1.5">
+                                <div data-cpu-usage class="bg-indigo-500 h-1.5 rounded-full transition-all" style="width: 0%"></div>
+                            </div>
+                            <span data-status class="text-xs">Connecting...</span>
+                        </div>
+                    </div>
+
+                </div>
+         
+          <% }); %>
+        </div>
+      </div>
+    </main>      
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const instances = document.querySelectorAll('[data-instance-id]');
+  
+      instances.forEach(instance => {
+        const containerId = instance.dataset.instanceId;
+        const isSecure = window.location.protocol === 'https:';
+        const wsProtocol = isSecure ? 'wss' : 'ws';
+        const wsPort = isSecure ? '' : `:<%= config.port %>`;
+        const socket = new WebSocket(`${wsProtocol}://${window.location.hostname}:${window.location.port}/stats/${containerId}`);
+  
+        const statusElement = instance.querySelector('[data-status]');
+        const statusBg = instance.querySelector('[data-status-bg]');
+        const ramUsageElement = instance.querySelector('[data-ram-usage]');
+        const ramLimitElement = instance.querySelector('[data-ram-limit]');
+        const cpuUsageElement = instance.querySelector('[data-cpu-usage]');
+  
+        function formatBytes(bytes, decimals = 2) {
+          if (bytes === 0) return '0.00 B';
+          const k = 1024;
+          const dm = decimals < 0 ? 0 : decimals;
+          const sizes = ['B', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+        
+        function createBackgroundChart(canvasId, type = 'line') {
+            return new Chart(document.getElementById(canvasId).getContext('2d'), {
+                type: type,
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        borderWidth: 1,
+                        pointRadius: 0,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    animation: false
+                }
+            });
+        }
+        
+       
+        function updateRamUsage(stats) {
+            const ramStatsUsage = stats.memory_stats.usage || 0;
+            const ramStatsLimit = stats.memory_stats.limit || 0;
+
+            const ramUsageRaw = ramStatsUsage / 1024 / 1024 || 0;
+            const ramLimitRaw = ramStatsLimit / 1024 / 1024 ;
+            const ramUsagePercent = (ramLimitRaw > 0) ? ((ramUsageRaw / ramLimitRaw) * 100).toFixed(2) : '0.00';
+            
+            document.getElementById('ramUsage').textContent = `${ramUsagePercent}% (${formatBytes(ramStatsUsage)} / ${formatBytes(ramStatsLimit)})`;
+        
+           
+        }
+        
+        function updateCpuUsage(stats) {
+            const cpuDelta = stats.cpu_stats.cpu_usage.total_usage - stats.precpu_stats.cpu_usage.total_usage;
+            const systemCpuDelta = stats.cpu_stats.system_cpu_usage - stats.precpu_stats.system_cpu_usage;
+            let cpuUsagePercent = ((cpuDelta / systemCpuDelta) * 100).toFixed(2);
+        
+            if (isNaN(cpuUsagePercent)) {
+                cpuUsagePercent = 0;
+            }
+        
+            document.getElementById('cpuUsage').textContent = `${cpuUsagePercent}%`;
+            
+          
+        }
+        
+        function updateDiskUsage(stats) {
+            const diskUsageRaw = parseFloat(stats.volumeSize);
+            const diskLimitRaw = 10 * 1024; // Assuming 10GB limit
+            const diskUsagePercent = (diskUsageRaw / diskLimitRaw * 100).toFixed(2);
+            document.getElementById('diskUsage').textContent = `${diskUsagePercent}% (${formatBytes(diskUsageRaw * 1024 * 1024)} / ${formatBytes(diskLimitRaw * 1024 * 1024)})`;
+        }
+        
+        function updateStatus(stats) {
+            const statusElement = document.getElementById('status');
+            const ramUsageRaw = stats.memory_stats.usage / 1024 / 1024 || 0;
+            
+            if (ramUsageRaw > 1) {
+                statusElement.textContent = 'Online';
+                statusElement.className = 'mt-1 text-lg font-medium tracking-tight text-emerald-500';
+            } else {
+                statusElement.textContent = 'Offline';
+                statusElement.className = 'mt-1 text-lg font-medium tracking-tight text-red-500';
+                term.clear();
+                term.write('\u001b[33mWings \x1b[0mThis instance appears to be offline!\r\n');
+            }
+        }
+        
+    
+        
+    });
+});
+    
+        </script>
+</body>
+</html>
