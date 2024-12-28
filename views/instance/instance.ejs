@@ -594,6 +594,7 @@ const eulaPopupHTML = `
             const inputElement = document.getElementById('console-input');
             const command = inputElement.value.trim();
             if (command && ws) {
+                term.write('\u001b[1m\u001b[33m~ \u001b[0m' + command + '\r\n');
                 ws.send(JSON.stringify({
                     event: 'cmd',
                     command: command,

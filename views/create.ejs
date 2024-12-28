@@ -76,22 +76,22 @@
       
             <!-- RAM -->
             <div>
-              <label for="memory" class="block text-sm font-medium text-gray-300 mb-2">RAM (GB)</label>
-              <input type="number" name="memory" id="memory" 
+              <label for="memory" class="block text-sm font-medium text-gray-300 mb-2">RAM (MB)</label>
+              <input type="number" name="memory" id="memory" max="4096" value="4096"
                 class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-500 transition px-4 py-2" />
             </div>
       
             <!-- CPU -->
             <div>
                 <label for="cpu" class="block text-sm font-medium text-gray-300 mb-2">CPU (cores)</label>
-              <input type="number" name="cpu" id="cpu" 
+              <input type="number" name="cpu" id="cpu" max="1" value="1"
                 class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-500 transition px-4 py-2" />
             </div>
       
             <!-- Disk -->
             <div>
               <label for="disk" class="block text-sm font-medium text-gray-300 mb-2">Disk (GB)</label>
-              <input type="number" name="disk" id="disk" 
+              <input type="number" name="disk" id="disk" value="10"
                 class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-500 transition px-4 py-2" />
             </div>
           </div>
@@ -113,7 +113,7 @@
             <select id="image" onchange="updateImageName()" 
               class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 px-4 py-2">
               <% images.forEach(function(image) { %>
-                <option value="<%= image.Id %>" data-variables='<%= JSON.stringify(image.Variables) %>'>
+                <option value="<%= image.Image %>" data-variables='<%= JSON.stringify(image.Variables) %>'>
                   <%= image.Name %>
                 </option>
               <% }); %>
@@ -142,6 +142,12 @@
           checkVariables();
         }
       
+        function getSelectedImageName() {
+    const selectElement = document.getElementById('image'); // Replace with your select element's ID
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const imageName = selectedOption.textContent.trim(); // Get the text content of the selected option
+    return imageName;
+}
         function checkVariables() {
     const select = document.getElementById("image");
     const selectedOption = select.options[select.selectedIndex];
@@ -165,21 +171,34 @@
     }
   }
   
-      
+    function generateRandom5DigitNumber() {
+        return Math.floor(10000 + Math.random() * 90000); // Ensures a 5-digit number
+    }
+
+    function getRandomPorts() {
+    // Generate two random 5-digit numbers
+    const port1 = generateRandom5DigitNumber();
+
+    // Return in the format "random5digitnumber:random5digitnumber"
+    return `${port1}:${port1}`;
+    }
+
         async function submitForm() {
           const name = encodeURIComponent(document.getElementById("name").value);
           const image = encodeURIComponent(document.getElementById("image").value);
-          const imageName = encodeURIComponent(document.getElementById("imageName").value);
+          const imageName = getSelectedImageName();
           const memory = encodeURIComponent(document.getElementById("memory").value);
           const cpu = encodeURIComponent(document.getElementById("cpu").value);
-          const node = encodeURIComponent(document.getElementById("node").value);
-      
+          const nodeId = encodeURIComponent(document.getElementById("node").value);
+          const userId = "<%= user.userId %>";
+          const ports = getRandomPorts();
+          const primary_port = ports.split(":")[1];
           const variables = Array.from(document.querySelectorAll('#variablesContainer input'))
             .reduce((acc, input) => ({ ...acc, [input.id]: input.value }), {});
           
           const variablesJSON = encodeURIComponent(JSON.stringify(variables));
       
-          document.location.href = `/create?name=${name}&image=${image}&imageName=${imageName}&ram=${memory}&cpu=${cpu}&node=${node}&variables=${variablesJSON}`;
+          document.location.href = `/create?name=${name}&image=${image}&imageName=${imageName}&ram=${memory}&cpu=${cpu}&nodeId=${nodeId}&variables=${variablesJSON}&user=${userId}&ports=${ports}&primary=${primary_port}`;
         }
       </script>
       

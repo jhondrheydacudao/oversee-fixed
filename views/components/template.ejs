@@ -6,10 +6,20 @@
     <title><%= name %></title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link 
+    rel="preload" 
+    href="/assets/Ndot-55.otf" 
+    
+    as="font" 
+    type="font/otf" 
+    crossorigin="anonymous"
+>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
 </head>
     <style>
         body {
@@ -47,8 +57,7 @@
     color: #ffffff;
 }
     </style>
-</head>
-<body class="bg-[#171717] text-gray-300" style="font-family: 'Inter'" x-data="{ sidebarOpen: false }" @keydown.escape="sidebarOpen = false">    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gradient-to-b from-[#101319] to-[#0b0d10]">
+<body class="bg-[#1c1e23] text-gray-200" style="font-family: 'Inter'" x-data="{ sidebarOpen: false }" @keydown.escape="sidebarOpen = false">    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gradient-to-b from-[#101319] to-[#0b0d10]">
         <!-- Sidebar -->
 <div :class="{'translate-x-0 ease-out': sidebarOpen, '-translate-x-full ease-in': !sidebarOpen}" class="fixed z-30 inset-y-0 left-0 w-64 transition duration-300 transform bg-[#1c1e23] border-r border-white/5 overflow-y-auto lg:translate-x-0 lg:static lg:inset-0 flex flex-col">
     <div class="flex items-center justify-center mt-8">
@@ -151,8 +160,8 @@
         </div>
 
         <!-- Content area -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="flex justify-between border-b border-dashed border-white/5 items-center p-4">
+        <div class="bg-[#1c1e23] flex-1 flex flex-col overflow">
+            <header class="flex justify-between border-b border-dashed border-white/10 items-center p-4">
                 <div class="flex items-center space-x-4">
                     <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none lg:hidden">
                         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -179,7 +188,7 @@
                              @click.away="open = false"
                              class="user-dropdown absolute right-0 mt-2 w-48 bg-[#181a1e] rounded-md overflow-hidden shadow-xl z-10" :class="{'open': open}">
                             <a href="/credentials" class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Account</a>
-                            <a href="#" onclick="clearCookiesAndLogout(); return false;" class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Logout</a>
+                            <a href="#" onclick="clearCookiesAndLogout()" class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -194,6 +203,6 @@
                 var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
                 document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
             }
-            window.location.href = "/logout";
+            window.location.href = "/auth/logout";
         }
     </script>
