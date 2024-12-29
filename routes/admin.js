@@ -1117,7 +1117,6 @@ async function deleteInstance(instance) {
     await db.set('instances', globalInstances);
     
     await db.delete(instance.ContainerId + '_instance');
-    await deleteWorkflowFromFile(instance.Id);
   } catch (error) {
     console.error(`Error deleting instance ${instance.ContainerId}:`, error);
     throw error;

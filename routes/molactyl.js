@@ -48,6 +48,18 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
       console.log('Announcement created:', await db.get('announcement'));
     }
     
+    const default_resources = {
+      ram: 4096,
+      disk: 10,
+      cores: 1
+    };
+    
+    const max_resources = await db.get('resources-'+ req.user.email)
+    if (!max_resources) {
+      console.log('Starting Resources Creation for '+ req.user.email);
+      await db.set('resources-' + req.user.email, default_resources);
+      console.log('Resources created for '+ req.user.email , await db.get('resources-'+ req.user.email));
+    }
     const nodes = await db.get('nodes');
     const images = await db.get('images');
     
@@ -58,6 +70,7 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
       logo: await db.get('logo') || false,
       instances,
       nodes,
+      max_resources,
       images,
       announcement: await db.get('announcement'),
       config: require('../config.json')
@@ -243,53 +256,96 @@ router.get("/transfercoins", async (req, res) => {
     return res.redirect(`/transfer?err=success`);
   });
 
-router.get('/create', isAuthenticated, async (req, res) => {
-  const { image, imageName, ram, cpu, ports, nodeId, name, user, primary, variables } =
-    req.query;
-  if (!imageName || !ram || !cpu || !ports || !nodeId || !name || !user || !primary) {
-    return res.status(400).json({ error: 'Missing parameters' });
-  }
-  try {
-    const Id = uuid().split('-')[0];
-    const node = await db.get(`${nodeId}_node`);
-    if (!node) {
-      return res.status(400).json({ error: 'Invalid node' });
+  router.get('/create', isAuthenticated, async (req, res) => {
+    const { image, imageName, ram, cpu, ports, nodeId, name, user, primary, variables } =
+      req.query;
+  
+    // Check for missing parameters
+    if (!imageName || !ram || !cpu || !ports || !nodeId || !name || !user || !primary) {
+      return res.status(400).json({ error: 'Missing parameters' });
     }
+  
+    try {
+      // Parse the RAM value from the query (in MIB)
+      const requestedRam = parseInt(ram, 10);  // Ensure the RAM value is parsed as an integer (in MIB)
+      const requestedCore = req.query.cpu;
+      // Fetch user resources from the database (should be in MIB as well)
+      const user_resources = await db.get('resources-' + req.user.email);
+      const availableRam = user_resources.ram;
+      const availableCore = user_resources.cores;
+      // Compare the requested RAM with the available RAM
+      if (requestedRam > availableRam) {
+        return res.redirect('../create-server?err=NOT_ENOUGH_RESOURCES');
+      }
 
-    const requestData = await prepareRequestData(
-      image,
-      ram,
-      cpu,
-      ports,
-      name,
-      node,
-      Id,
-      variables,
-      imageName,
-    );
-    const response = await axios(requestData);
+      if (requestedCore > availableCore) {
+        return res.redirect('../create-server?err=NOT_ENOUGH_RESOURCES');
+      }
+  
+      const newRam = requestedRam - availableRam;
+      const newCpu = requestedCore - availableCore;
+      const newResources = {
+        ram: newRam,
+        disk: 10,
+        cores: newCpu
+      }
+      const Id = uuid().split('-')[0];
+      const node = await db.get(`${nodeId}_node`);
+      if (!node) {
+        return res.status(400).json({ error: 'Invalid node' });
+      }
+  
+      const requestData = await prepareRequestData(
+        image,
+        requestedRam,
+        cpu,
+        ports,
+        name,
+        node,
+        Id,
+        variables,
+        imageName
+      );
+      const response = await axios(requestData);
+  
+      await updateDatabaseWithNewInstance(
+        response.data,
+        user,
+        node,
+        image,
+        requestedRam,
+        cpu,
+        ports,
+        primary,
+        name,
+        Id,
+        imageName
+      );
+  
+      logAudit(req.user.userId, req.user.username, 'instance:create', req.ip);
+      await db.set('resources-'+ req.user.email, newResources)
+      res.redirect('../dashboard?err=CREATED');
+    } catch (error) {
+      console.error('Error deploying instance:', error);
+      res.redirect('../create-server?err=INTERNALERROR');
+    }
+  });  
 
-    await updateDatabaseWithNewInstance(
-      response.data,
-      user,
-      node,
-      image,
-      ram,
-      cpu,
-      ports,
-      primary,
-      name,
-      Id,
-      imageName,
-    );
-
-    logAudit(req.user.userId, req.user.username, 'instance:create', req.ip);
-    res.redirect('../dashboard?err=CREATED');
-  } catch (error) {
-    console.error('Error deploying instance:', error);
-    res.redirect('../create-server?err=INTERNALERROR')
-  }
-});
+  router.get('/delete/:id', isAuthenticated, async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+      return res.redirect('/instances')
+    }
+    const instance = await db.get(id + '_instance');
+    if (!instance) {
+      return res.status(404).send('Instance not found');
+    }
+    if (!instance.User === req.user.userId) {
+      return res.redirect('/dashboard?err=DO_NOT_OWN')
+    }
+    await deleteInstance(instance);
+    res.redirect('/dashboard?err=DELETED');
+  });
 
 async function prepareRequestData(image, memory, cpu, ports, name, node, Id, variables, imagename) {
   const rawImages = await db.get('images');
@@ -398,4 +454,22 @@ async function updateDatabaseWithNewInstance(
   await db.set(`${Id}_instance`, instanceData);
 }
 
+async function deleteInstance(instance) {
+  try {
+    await axios.get(`http://Skyport:${instance.Node.apiKey}@${instance.Node.address}:${instance.Node.port}/instances/${instance.ContainerId}/delete`);
+    
+    let userInstances = await db.get(instance.User + '_instances') || [];
+    userInstances = userInstances.filter(obj => obj.ContainerId !== instance.ContainerId);
+    await db.set(instance.User + '_instances', userInstances);
+    
+    let globalInstances = await db.get('instances') || [];
+    globalInstances = globalInstances.filter(obj => obj.ContainerId !== instance.ContainerId);
+    await db.set('instances', globalInstances);
+    
+    await db.delete(instance.ContainerId + '_instance');
+  } catch (error) {
+    console.error(`Error deleting instance ${instance.ContainerId}:`, error);
+    throw error;
+  }
+}
 module.exports = router;

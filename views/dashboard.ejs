@@ -58,11 +58,7 @@
           </ol>
       </nav>
   </div>
-  
-  <!-- Content -->
-  
-  
-  
+
 
   <!-- Welcome Message and Quick Links -->
   <div class="w-full border-l-4 mt-2 mb-8 bg-blue-600/15 border-blue-600 rounded-r-2xl">
@@ -107,8 +103,36 @@
     
   </div>
   </div>
-  </div>
-  </div>
-
+  <div>
+    <dl class="mt-4 grid grid-cols-1 divide-y divide-white/5 overflow-hidden rounded-2xl bg-white/5 shadow md:grid-cols-3 md:divide-y-0 md:divide-x">
+     
+            <div class="px-4 py-5 sm:p-6">
+              <dt class="text-base font-medium text-white">Total Ram</dt>
+              <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
+                <div class="flex items-baseline text-2xl font-semibold text-orange-500">
+                  <%= max_resources.ram %> (MiB)
+                </div>
+              </dd>
+            </div>
+          
+            <div class="px-4 py-5 sm:p-6">
+              <dt class="text-base font-medium text-white">Total CPU</dt>
+              <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
+                <div class="flex items-baseline text-2xl font-semibold text-orange-500">
+               <%= max_resources.cores %> (cores)
+                </div>
+              </dd>
+            </div>
+            <div class="px-4 py-5 sm:p-6">
+              <dt class="text-base font-medium text-white">Total Disk</dt>
+              <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
+                <div class="flex items-baseline text-2xl font-semibold text-orange-500">
+                <%= max_resources.disk %> (GiB)
+                </div>
+              </dd>
+            </div>
+       
+      
+    </dl>
   </div>
   <%- include('./components/footer') %>

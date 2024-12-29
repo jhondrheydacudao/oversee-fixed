@@ -71,28 +71,28 @@
             <div>
               <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Server Name</label>
               <input type="text" name="name" id="name" placeholder="my-awesome-server" 
-                class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-500 transition px-4 py-2" />
+                class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 transition px-4 py-2" />
             </div>
       
             <!-- RAM -->
             <div>
               <label for="memory" class="block text-sm font-medium text-gray-300 mb-2">RAM (MB)</label>
               <input type="number" name="memory" id="memory" max="4096" value="4096"
-                class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-500 transition px-4 py-2" />
+                class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 transition px-4 py-2" />
             </div>
       
             <!-- CPU -->
             <div>
                 <label for="cpu" class="block text-sm font-medium text-gray-300 mb-2">CPU (cores)</label>
               <input type="number" name="cpu" id="cpu" max="1" value="1"
-                class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-500 transition px-4 py-2" />
+                class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 transition px-4 py-2" />
             </div>
       
             <!-- Disk -->
             <div>
               <label for="disk" class="block text-sm font-medium text-gray-300 mb-2">Disk (GB)</label>
               <input type="number" name="disk" id="disk" value="10"
-                class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-500 transition px-4 py-2" />
+                class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500 transition px-4 py-2" />
             </div>
           </div>
       
@@ -100,7 +100,7 @@
           <div class="w-full">
             <label class="block text-sm font-medium text-gray-300 mb-2">Node</label>
             <select id="node" 
-              class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 px-4 py-2">
+              class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500 px-4 py-2">
               <% nodes.forEach(function(node) { %>
                 <option value="<%= node.id %>"><%= node.name %></option>
               <% }); %>
@@ -111,7 +111,7 @@
           <div class="w-full">
             <label class="block text-sm font-medium text-gray-300 mb-2">Image</label>
             <select id="image" onchange="updateImageName()" 
-              class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-orange-500 focus:border-orange-500 px-4 py-2">
+              class="w-full rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500 px-4 py-2">
               <% images.forEach(function(image) { %>
                 <option value="<%= image.Image %>" data-variables='<%= JSON.stringify(image.Variables) %>'>
                   <%= image.Name %>
@@ -127,7 +127,7 @@
           <!-- Submit Button -->
           <div class="flex justify-end">
             <button type="button" onclick="submitForm()" 
-              class="px-6 py-3 bg-orange-600 text-white rounded-full shadow-md hover:bg-orange-700 transition focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+              class="px-6 py-3 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
               Create Server
             </button>
           </div>
