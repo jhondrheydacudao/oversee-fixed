@@ -105,7 +105,7 @@ app.use(async (req, res, next) => {
 if (config.mode === 'production' || false) {
   app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Hydren-Product', 'OverSee');
     res.setHeader('Expires', '5');
     next();
   });

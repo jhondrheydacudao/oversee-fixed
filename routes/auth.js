@@ -195,7 +195,7 @@ router.get('/auth/login', async (req, res, next) => {
         req.user = null;
         return res.redirect('/2fa');
       } else {
-        return res.redirect('/instances');
+        return res.redirect('/dashboard');
       }
     });
   })(req, res, next);
@@ -211,7 +211,7 @@ router.post('/auth/login', passport.authenticate('local', {
       const user = users.find(u => u.username === req.user.username);
 
       if (user && user.verified) {
-        return res.redirect('/instances');
+        return res.redirect('/dashboard');
       }
 
       if (user && user.twoFAEnabled) {
@@ -223,7 +223,7 @@ router.post('/auth/login', passport.authenticate('local', {
           return res.redirect('/2fa');
         });
       } else {
-        return res.redirect('/instances');
+        return res.redirect('/dashboard');
       }
     } else {
       return res.redirect('/login?err=InvalidCredentials&state=failed');
@@ -268,7 +268,7 @@ router.post('/2fa', async (req, res) => {
         return next(err);
       }
       req.session.tempUser = null;
-      return res.redirect('/instances');
+      return res.redirect('/dashboard');
     });
   } else {
     return res.status(400).redirect('/2fa?err=InvalidAuthCode');
@@ -276,7 +276,7 @@ router.post('/2fa', async (req, res) => {
 });
 
 router.get('/auth/login', passport.authenticate('local', {
-  successRedirect: '/instances',
+  successRedirect: '/dashboard',
   failureRedirect: '/login?err=InvalidCredentials&state=failed',
 }));
 

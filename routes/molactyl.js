@@ -5,6 +5,7 @@ const axios = require('axios');
 const { db } = require('../handlers/db.js');
 const config = require('../config.json');
 const bcrypt = require('bcrypt');
+const WebSocket = require('ws');
 const saltRounds = 10;
 const multer = require('multer');
 const path = require('path')
@@ -34,18 +35,33 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
             }
         }
     }
-    const nodes = db.get('nodes');
-    const images = db.get('images');
+    const announcement = await db.get('announcement');
+    const announcement_data = {
+      title: 'Change me',
+      description: 'Change me from admin settings',
+      type: 'warn'
+    };
+    
+    if (!announcement) {
+      console.log('Announcement does not exist. Creating...');
+      await db.set('announcement', announcement_data);
+      console.log('Announcement created:', await db.get('announcement'));
+    }
+    
+    const nodes = await db.get('nodes');
+    const images = await db.get('images');
+    
     res.render('dashboard', {
-        req,
-        user: req.user,
-        name: await db.get('name') || 'HydraPanel',
-        logo: await db.get('logo') || false,
-        instances,
-        nodes,
-        images,
-        config: require('../config.json')
-    });
+      req,
+      user: req.user,
+      name: await db.get('name') || 'HydraPanel',
+      logo: await db.get('logo') || false,
+      instances,
+      nodes,
+      images,
+      announcement: await db.get('announcement'),
+      config: require('../config.json')
+    });    
 });
 
 router.get("/create-server", isAuthenticated, async (req, res) => {
@@ -99,6 +115,133 @@ router.get("/create-server", isAuthenticated, async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+
+router.ws('/afkwspath', async (ws, req) => {
+  let earners = [];
+  try {
+      if (!req.user || !req.user.email || !req.user.userId) {
+          console.error('WebSocket connection failed: Missing user data in request.');
+          return ws.close();
+      }
+
+      if (earners[req.user.email] === true) {
+          console.error(`WebSocket connection rejected: User ${req.user.email} is already an earner.`);
+          return ws.close();
+      }
+
+      const timeConf = process.env.AFK_TIME || 60;
+      if (!timeConf) {
+          console.error('Environment variable AFK_TIME is not set.');
+          return ws.close();
+      }
+
+      let time = timeConf;
+      earners[req.user.email] = true;
+
+      let aba = setInterval(async () => {
+          try {
+              if (earners[req.user.email] === true) {
+                  time--;
+                  if (time <= 0) {
+                      time = timeConf;
+                      ws.send(JSON.stringify({ "type": "coin" }));
+                      let coins = await db.get(`coins-${req.user.email}`);
+                      if (!coins) {
+                          console.error(`Coins data not found for ${req.user.email}. Initializing to 0.`);
+                          coins = 0;
+                      }
+                      let updatedCoins = parseInt(coins) + 5;
+                      await db.set(`coins-${req.user.email}`, updatedCoins);
+                  }
+                  ws.send(JSON.stringify({ "type": "count", "amount": time }));
+              }
+          } catch (intervalError) {
+              console.error(`Error during interval for user ${req.user.email}:`, intervalError);
+          }
+      }, 1000);
+
+      ws.on('close', async () => {
+          try {
+              delete earners[req.user.email];
+              clearInterval(aba);
+          } catch (closeError) {
+              console.error(`Error on WebSocket close for user ${req.user.email}:`, closeError);
+          }
+      });
+  } catch (error) {
+      console.error('Error in WebSocket connection handler:', error);
+      ws.close();
+  }
+});
+
+router.get('/afk', async (req, res) => {
+  if (!req.user) return res.redirect('/');
+  const email = req.user.email;
+  const coinsKey = `coins-${email}`;
+  
+  let coins = await db.get(coinsKey);
+  
+  if (!coins) {
+      coins = 0;
+      await db.set(coinsKey, coins);
+  }  
+  res.render('afk', {
+    req,
+    coins,
+    user: req.user,
+    users: await db.get('users') || [], 
+    name: await db.get('name') || 'HydraPanel',
+    logo: await db.get('logo') || false
+  });
+});
+
+router.get('/transfer', async (req, res) => {
+  if (!req.user) return res.redirect('/');
+  const email = req.user.email;
+  const coinsKey = `coins-${email}`;
+  
+  let coins = await db.get(coinsKey);
+  
+  if (!coins) {
+      coins = 0;
+      await db.set(coinsKey, coins);
+  }  
+  res.render('transfer', {
+    req,
+    coins,
+    user: req.user,
+    users: await db.get('users') || [], 
+    name: await db.get('name') || 'HydraPanel',
+    logo: await db.get('logo') || false
+  });
+});
+
+router.get("/transfercoins", async (req, res) => {
+  if (!req.user) return res.redirect(`/`);
+
+    const coins = parseInt(req.query.coins);
+    if (!coins || !req.query.email)
+    return res.redirect(`/transfer?err=MISSINGFIELDS`);
+    if (req.query.email.includes(`${req.user.email}`))
+    return res.redirect(`/transfer?err=CANNOTGIFTYOURSELF`);
+
+     if (coins < 1) return res.redirect(`/transfer?err=TOOLOWCOINS`);
+
+    const usercoins = await db.get(`coins-${req.user.email}`);
+    const othercoins = await db.get(`coins-${req.query.email}`);
+
+    if (!othercoins) {
+      return res.redirect(`/transfer?err=USERDOESNTEXIST`);
+    }
+    if (usercoins < coins) {
+      return res.redirect(`/transfer?err=CANTAFFORD`);
+    }
+
+    await db.set(`coins-${req.query.email}`, othercoins + coins);
+    await db.set(`coins-${req.user.email}`, usercoins - coins);
+    return res.redirect(`/transfer?err=success`);
+  });
 
 router.get('/create', isAuthenticated, async (req, res) => {
   const { image, imageName, ram, cpu, ports, nodeId, name, user, primary, variables } =

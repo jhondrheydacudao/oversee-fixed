@@ -96,7 +96,7 @@ async function setupRoutes() {
  */
 
 router.get('/', async (req, res) => {
-    res.redirect('../instances')
+    res.redirect('../dashboard')
 });
 
 // Setup routes

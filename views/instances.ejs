@@ -100,7 +100,23 @@
                 statusElementtext.className = 'size-2 rounded-full bg-red-500 mr-2';
               }
             }
+            function executenodedown(instanceId) {
+              const statusElement = document.getElementById(`status_${instanceId}`);
+              const statusElementtext = document.getElementById(`status-color_${instanceId}`);
+
+              statusElement.textContent = 'Node Offline';
+              statusElement.className = 'text-red-500';
+              statusElementtext.className = 'size-2 rounded-full bg-red-500 mr-2';
+            }
           
+            function executecontainernotfound(instanceId) {
+              const statusElement = document.getElementById(`status_${instanceId}`);
+              const statusElementtext = document.getElementById(`status-color_${instanceId}`);
+
+              statusElement.textContent = 'Container not found';
+              statusElement.className = 'text-yellow-500';
+              statusElementtext.className = 'size-2 rounded-full bg-yellow-500 mr-2';
+            }
             function isValidJson(str) {
               try {
                 JSON.parse(str);
@@ -111,23 +127,45 @@
             }
           
             function initStatsWebSocket(instanceId) {
-              const statsWs = new WebSocket(`${protocol}://${window.location.hostname}:${window.location.port}/stats/${instanceId}`);
-              
-              statsWs.onmessage = event => {
-                  if (isValidJson(event.data)) {
-                      const stats = JSON.parse(event.data);
-                      if (stats.error) {
-                          console.error('Error fetching stats:', stats.error);
-                          return;
-                      }
-          
-                      updateRamUsage(stats, instanceId);
-                      updateCpuUsage(stats, instanceId);
-                      updateStatus(stats, instanceId);
-                  } else {
-                      console.log('Received non-JSON data:', event.data);
-                  }
-              };
+                const statsWs = new WebSocket(`${protocol}://${window.location.hostname}:${window.location.port}/stats/${instanceId}`);
+
+                statsWs.onmessage = event => {
+                    // Check if the event.data contains the specific string
+                    if (event.data.includes("The HydraDaemon instance appears to be down. Retrying...")) {
+                        console.warn('HydraDaemon instance appears to be down. Executing node down handler...');
+                        executenodedown(instanceId);
+                        return; // Exit early since no further processing is needed for this message
+                    }
+            
+                     // Check if the event.data contains the specific string
+                     if (event.data.includes("Container not found")) {
+                        executecontainernotfound(instanceId);
+                        return; // Exit early since no further processing is needed for this message
+                    }
+
+                    // Check if the data is valid JSON and process it
+                    if (isValidJson(event.data)) {
+                        const stats = JSON.parse(event.data);
+                        if (stats.error) {
+                            console.error('Error fetching stats:', stats.error);
+                            return;
+                        }
+            
+                        updateRamUsage(stats, instanceId);
+                        updateCpuUsage(stats, instanceId);
+                        updateStatus(stats, instanceId);
+                    } else {
+                        console.log('Received non-JSON data:', event.data);
+                    }
+                };            
+
+                statsWs.onerror = error => {
+                    console.error('WebSocket error:', error);
+                };
+            
+                statsWs.onclose = () => {
+                    console.log('WebSocket closed for instance:', instanceId);
+                };
           
               statsWs.onclose = () => {
                   console.log(`WebSocket Stats connection for instance ${instanceId} closed, attempting to reconnect...`);
@@ -158,7 +196,7 @@
               <div class="col-span-2">
                   <div class="flex items-center gap-2">
                       <div class="w-full bg-white/10 rounded-full h-1.5">
-                          <div id="ramUsage_<%= instance.Id %>" class="bg-indigo-500 h-1.5 rounded-full transition-all" style="width: 0%"></div>
+                          <div id="ramUsage_<%= instance.Id %>" class="bg-blue-500 h-1.5 rounded-full transition-all" style="width: 0%"></div>
                       </div>
                       <span id="ramUsagetext_<%= instance.Id %>" class="text-xs">Connecting...</span>
                   </div>
@@ -168,7 +206,7 @@
               <div class="col-span-2">
                   <div class="flex items-center gap-2">
                       <div class="w-full bg-white/10 rounded-full h-1.5">
-                          <div id="cpuUsage_<%= instance.Id %>" class="bg-indigo-500 h-1.5 rounded-full transition-all" style="width: 0%"></div>
+                          <div id="cpuUsage_<%= instance.Id %>" class="bg-blue-500 h-1.5 rounded-full transition-all" style="width: 0%"></div>
                       </div>
                       <span id="cpuUsagetext_<%= instance.Id %>" class="text-xs">Connecting...</span>
                   </div>

@@ -44,12 +44,56 @@
                     </button>
                      </form>
                   </div>
-                  
+                
                </div>
             </div>
          </div>
       </dl>
    </div>
+   <div class="px-4 sm:px-6 lg:px-8">
+      <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2">
+        <div class="ard rounded-xl p-6 bg-white/5 shadow-2xl overflow-hidden transition-transform transform hover:scale-105 duration-300">
+          <div class="flex items-center justify-between">
+            <div class="min-w-0 flex-1">
+              <h2 class="text-lg font-semibold text-white tracking-tight">
+                <span class="flex flex-row mb-4">Change Announcement</span>
+              </h2>
+              <form action="/admin/settings/change/annoucement" method="POST" class="mt-5">
+                <div class="flex flex-col sm:flex-row justify-between">
+                  <div class="w-full sm:w-1/2 sm:mr-4 mb-4 sm:mb-0">
+                    <label for="announcementTitle" class="text-white text-sm tracking-tight mb-2">Announcement Title</label>
+                    <input id="announcementTitle" name="title" type="text" 
+                      class="rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm mt-1 mb-0 w-full transition duration-200 hover:bg-gray-700 px-4 py-2 border border-gray-600 bg-gray-700 placeholder-white text-white" 
+                      placeholder="Enter title" />
+                  </div>
+                  <div class="w-full sm:w-1/2 sm:mr-4 mb-4 sm:mb-0">
+                    <label for="announcementDescription" class="text-white text-sm tracking-tight mb-2">Announcement Description</label>
+                    <input id="announcementDescription" name="description" type="text" 
+                      class="rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm mt-1 mb-0 w-full transition duration-200 hover:bg-gray-700 px-4 py-2 border border-gray-600 bg-gray-700 placeholder-white text-white" 
+                      placeholder="Enter description" />
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <label for="type" class="text-white text-sm tracking-tight mb-2">Announcement Type</label>
+                  <select id="type" name="type" 
+                    class="rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm mt-1 mb-0 w-full transition duration-200 hover:bg-gray-700 px-4 py-2 border border-gray-600 bg-gray-700 text-white">
+                    <option value="info">Information</option>
+                    <option value="warn">Warning</option>
+                    <option value="status">Status</option>
+                  </select>
+                </div>
+                <br />
+                <button type="submit" id="Save-Announcement" 
+                  class="clex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-5 rounded-lg transition duration-300">
+                  Save Announcement
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </dl>
+    </div>
+    
 </main>
 
 <script>

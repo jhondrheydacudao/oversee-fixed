@@ -443,6 +443,7 @@ router.post('/users/create', isAdmin, async (req, res) => {
   let users = await db.get('users') || [];
   users.push(newUser);
   await db.set('users', users);
+  await db.set(`coins-${email}`, 0);
 
   logAudit(req.user.userId, req.user.username, 'user:create', req.ip);
 
@@ -663,6 +664,22 @@ router.post('/admin/settings/change/name', isAdmin, async (req, res) => {
   }
 });
 
+router.post('/admin/settings/change/annoucement', isAdmin, async (req, res) => {
+  const { title, description, type } = req.body;
+  const announcement_data = {
+    title: `${title}`,
+    description: `${description}`,
+    type: `${type}`
+  };
+
+  try {
+    await db.set('announcement', announcement_data);
+    res.redirect('/admin/settings?changedannoucmentto=' + title + description + type);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Database error");
+  }
+});
 
 router.post('/admin/settings/change/theme/button-color', isAdmin, async (req, res) => {
   const buttoncolor = req.body.buttoncolor;
