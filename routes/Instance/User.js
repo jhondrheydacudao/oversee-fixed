@@ -29,7 +29,7 @@ router.get('/instance/:id/users', async (req, res) => {
             req,
             instance,
             user: req.user,
-            name: await db.get('name') || 'HydraPanel',
+            name: await db.get('name') || 'OverSee',
             logo: await db.get('logo') || false,
             users,
             addons: {

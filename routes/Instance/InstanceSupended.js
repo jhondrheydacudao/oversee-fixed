@@ -40,7 +40,7 @@ router.get("/instance/:id/suspended", async (req, res) => {
     res.render('instance/suspended', {
         req,
         user: req.user,
-        name: await db.get('name') || 'HydraPanel',
+        name: await db.get('name') || 'OverSee',
         logo: await db.get('logo') || false
     });
 });

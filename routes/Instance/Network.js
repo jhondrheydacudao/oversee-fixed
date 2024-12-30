@@ -42,7 +42,7 @@ router.get("/instance/:id/network", async (req, res) => {
     res.render('instance/network', {
         req,
         user: req.user,
-        name: await db.get('name') || 'HydraPanel',
+        name: await db.get('name') || 'OverSee',
         logo: await db.get('logo') || false,
         instance,
         ports,

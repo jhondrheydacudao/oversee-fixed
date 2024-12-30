@@ -130,7 +130,7 @@ dist
 .pnp.*
 
 public/assets/logo.png
-hydrapanel.db
+oversee.db
 sessions.db
 tmp/
 bs-config.json

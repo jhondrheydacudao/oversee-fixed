@@ -361,7 +361,7 @@ router.get('/api/images', validateApiKey, async (req, res) => {
 
 router.get('/api/name', validateApiKey, async (req, res) => {
   try {
-    const name = await db.get('name') || 'HydraPanel';
+    const name = await db.get('name') || 'OverSee';
     res.json({ name });
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve name' });

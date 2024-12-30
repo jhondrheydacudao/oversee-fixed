@@ -5,30 +5,30 @@ const CatLoggr = require('cat-loggr');
 const log = new CatLoggr();
 
 async function init() {
-    const HydraPanel = await db.get('HydraPanel_instance');
-    if (!HydraPanel) {
-        log.init('this is probably your first time starting HydraPanel, welcome!');
-        log.init('you can find documentation for the panel at undefined');
+    const OverSee = await db.get('OverSee_instance');
+    if (!OverSee) {
+        log.init('this is probably your first time starting OverSee, welcome!');
+        log.init('you can find documentation for the panel at https://hydrenllc.us.kg');
 
         let imageCheck = await db.get('images');
         if (!imageCheck) {
-            log.error('before starting HydraPanel for the first time, you didn\'t run the seed command!');
+            log.error('before starting OverSee for the first time, you didn\'t run the seed command!');
             log.error('please run: npm run seed');
             log.error('if you didn\'t do it already, make a user for yourself: npm run createUser');
             process.exit();
         }
 
-        let HydraPanelID = uuidv4();
+        let OverSeeID = uuidv4();
         let setupTime = Date.now();
         
         let info = {
-            HydraPanelID: HydraPanelID,
+            OverSeeID: OverSeeID,
             setupTime: setupTime,
             originalVersion: config.version
         }
 
-        await db.set('HydraPanel_instance', info)
-        log.info('initialized HydraPanel panel with id: ' + HydraPanelID)
+        await db.set('OverSee_instance', info)
+        log.info('initialized OverSee panel with id: ' + OverSeeID)
     }        
 
     log.info('init complete!')
