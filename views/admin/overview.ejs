@@ -1,14 +1,14 @@
 <%- include('../components/template') %>
 <main id="content" class="min-h-screen text-gray-300">
-  <div class="flex flex-col items-center py-8 px-4">
+  <div class="flex flex-col items-center px-4 py-8">
     <div class="flex items-center justify-center mb-6">
       <h2 class="text-3xl font-semibold text-white"><%= req.translations.overviewText %></h2>
   </div>
-    <section class="w-full max-w-7xl mb-10">
+    <section class="w-full mb-10 max-w-7xl">
       <div class="bg-[#1c1c1c] p-12 rounded-lg border-4 border-[#1f1c1c] shadow-lg">
         <div class="flex items-center justify-start space-x-8">
           <!-- Image Section -->
-          <img src="../assets/panellogo.png" alt="App Image" class="w-full h-full object-cover rounded-lg">
+          <img src="https://raw.githubusercontent.com/hydren-dev/Oversee/refs/heads/main/oversee.webp" alt="OverSee" class="object-cover w-full h-full rounded-lg">
           
           <!-- Text and Description Section -->
            
@@ -44,7 +44,7 @@
                   console.error('Error fetching latest version:', error);
                 });
             </script>
-            <p class="text-sm mt-1 font-normal text-neutral-300 mb-2">
+            <p class="mt-1 mb-2 text-sm font-normal text-neutral-300">
               <%= req.translations.sysInfoText %> <span id="currentVersion"></span>. <span id="versionStatus"></span>
             </p>
                     </div>
@@ -59,12 +59,12 @@
     
 
       <!-- Main Stats Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
         <!-- Total Users -->
         <div class="bg-[#1c1c1b] p-6 rounded-xl border border-white/20 hover:scale-105 transform transition-all duration-300 shadow-lg">
           <div>
             <p class="text-sm font-medium text-white/70">Total Users</p>
-            <p class="text-3xl font-semibold text-white mt-2"><%= usersTotal %></p>
+            <p class="mt-2 text-3xl font-semibold text-white"><%= usersTotal %></p>
           </div>
         </div>
 
@@ -72,7 +72,7 @@
         <div class="bg-[#1c1c1b] p-6 rounded-xl border border-white/20 hover:scale-105 transform transition-all duration-300 shadow-lg">
           <div>
             <p class="text-sm font-medium text-white/70">Active Servers</p>
-            <p class="text-3xl font-semibold text-white mt-2"><%= instancesTotal %></p>
+            <p class="mt-2 text-3xl font-semibold text-white"><%= instancesTotal %></p>
           </div>
         </div>
 
@@ -80,7 +80,7 @@
         <div class="bg-[#1c1c1b] p-6 rounded-xl border border-white/20 hover:scale-105 transform transition-all duration-300 shadow-lg">
           <div>
             <p class="text-sm font-medium text-white/70">Total Nodes</p>
-            <p class="text-3xl font-semibold text-white mt-2"><%= nodesTotal %></p>
+            <p class="mt-2 text-3xl font-semibold text-white"><%= nodesTotal %></p>
           </div>
         </div>
       </div>
