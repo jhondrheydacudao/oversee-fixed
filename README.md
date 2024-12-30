@@ -5,5 +5,5 @@ no discord login sadly ill do it
 
 install the dashboard using
 ```bash
-git clone https://github.com/hydren-dev/Oversee.git && cd Oversee && npm run seed && npm run createUser && node .
+git clone https://github.com/hydren-dev/Oversee.git && cd Oversee && npm install && npm run seed && npm run createUser && node .
 ```
