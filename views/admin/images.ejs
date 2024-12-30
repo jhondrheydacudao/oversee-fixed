@@ -1,9 +1,9 @@
 <%- include('../components/admin_template') %>
 <main id="content">
     <div class="bg-transparent">
-        <div class="sm:flex sm:items-center px-8 pt-4">
+        <div class="px-8 pt-4 sm:flex sm:items-center">
            <div class="sm:flex-auto">
-             <h1 class="text-base font-medium leading-6 text-white mb-4 heavy"><%= req.translations.images %></h1>
+             <h1 class="mb-4 text-base font-medium leading-6 text-white heavy"><%= req.translations.images %></h1>
            </div>
          </div>
          <% if (req.query.err=="none" ) { %>
@@ -27,14 +27,14 @@
           </div> 
         <% } %>
          <div class="mt-4 sm:ml-8 sm:mt-0 sm:flex-none">
-            <div class="px-6 py-3 mt-6 grid grid-cols-12 gap-4 flex flex-col items-center text-sm font-medium text-white/50" id="nodeTable">
+            <div class="flex grid flex-col items-center grid-cols-12 gap-4 px-6 py-3 mt-6 text-sm font-medium text-white/50" id="nodeTable">
                 <div class="col-span-2"><%= req.translations.name %></div>
                 <div class="col-span-2"><%= req.translations.author %></div>
                 <div class="col-span-2"><%= req.translations.dockerImage %></div>
                 <div class="col-span-2"><%= req.translations.remove %></div>
                 <div class="flex items-center gap-3">
                   <% if (req.user.admin === true) { %>
-                    <button id="uploadimage" type="button" class="hover:scale-95 flex items-center justify-center h-11 gap-2 px-5 text-sm font-medium text-white transition-all duration-200 rounded-full shadow bg-indigo-500 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-800 focus:ring-offset-2 ring-offset-gray-200 hover:shadow-none">
+                    <button id="uploadimage" type="button" class="flex items-center justify-center gap-2 px-5 text-sm font-medium text-white transition-all duration-200 bg-indigo-500 rounded-full shadow hover:scale-95 h-11 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-800 focus:ring-offset-2 ring-offset-gray-200 hover:shadow-none">
                       <span>Import Image</span>
                     </button>
                   <% } %>
@@ -42,7 +42,7 @@
             </div>
 
             <% images.forEach(function(image) { %>
-            <div data-image='<%= JSON.stringify(image) %>' class="server-row mb-4 bg-white/5 rounded-2xl hover:bg-white/10 border-2 border-dashed border-transparent hover:border-white/5 transition px-6 py-4 grid grid-cols-12 gap-4 items-center cursor-pointer">
+            <div data-image='<%= JSON.stringify(image) %>' class="flex items-center gap-4 px-6 py-4 mb-4 transition border-2 border-transparent border-dashed cursor-pointer server-row bg-white/5 rounded-2xl hover:bg-white/10 hover:border-white/5">
                 <!-- Server Name & Node -->
                 <div class="col-span-2">
                     <div class="font-medium text-white"><%= image.Name %></div>
@@ -50,12 +50,12 @@
 
                 <!-- Status -->
                 <div class="col-span-2">
-                    <div class="inline-flex items-center px-7 py-1 rounded-full text-xs font-medium bg-zinc-500/20 text-zinc-300">
+                    <div class="flex items-center py-1 text-xs font-medium rounded-full px-7 bg-zinc-500/20 text-zinc-300">
                         <div class="flex items-center space-x-2">
-                            <div class="w-4 h-4 rounded-full bg-emerald-500/20 flex justify-center items-center">
+                            <div class="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/20">
                                 <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
                             </div>
-                            <span class="text-emerald-300 text-sm"><%= image.Author %> (<%= image.AuthorName %>)</span>
+                            <span class="text-sm text-emerald-300"><%= image.Author %> (<%= image.AuthorName %>)</span>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                 <!-- Docker Image -->
                 <div class="col-span-2 px-full">
                     <div class="flex items-center gap-2">
-                        <span class="text-xs bg-zinc-500/20 text-white px-2 py-1 rounded shadow-sm">
+                        <span class="px-2 py-1 text-xs text-white rounded shadow-sm bg-zinc-500/20">
                             <code class="font-mono">
                                 <%= image.Image %>
                             </code>
@@ -72,17 +72,17 @@
                 </div>
 
                 <!-- Remove Button -->
-                <a class="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-4 rounded-full text-sm hover:scale-95 cursor-pointer" data-image-id="<%= image.Id %>" data-user-id="<%= user.userId %>">Remove</a>
+                <a class="px-4 py-1 text-sm font-medium text-white bg-red-600 rounded-full cursor-pointer hover:bg-red-700 hover:scale-95" data-image-id="<%= image.Id %>" data-user-id="<%= user.userId %>">Remove</a>
             </div>
             <% }); %>
 
           </div>
       </div>
-      <div style="display: none;" id="imageDetail" class="mt-6 pl-8 w-full text-white">
-        <button id="backButton" class="block rounded-xl bg-neutral-800 px-3 py-2 text-center text-sm font-medium text-white shadow-lg hover:bg-neutral-600 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+      <div style="display: none;" id="imageDetail" class="w-full pl-8 mt-6 text-white">
+        <button id="backButton" class="block px-3 py-2 text-sm font-medium text-center text-white transition shadow-lg rounded-xl bg-neutral-800 hover:bg-neutral-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
           <%= req.translations.back %>
         </button>
-        <h1 id="imageName" class="text-2xl font-bold mt-4"></h1>
+        <h1 id="imageName" class="mt-4 text-2xl font-bold"></h1>
         <p id="imageDescription" class="mt-2 text-neutral-400"></p>
         <div class="mt-4">
           <span id="dockerImage" class="bg-white/5 text-white text-sm font-mono mr-2 px-2.5 py-1 rounded-xl"></span>
@@ -91,11 +91,11 @@
         <div class="mt-4">
           <p id="authorInfo" class="text-neutral-400"></p>
         </div>
-        <div class="mt-4 flex">
-          <button id="deleteImageButton" class="block rounded-xl bg-red-600 px-3 py-2 text-center text-sm font-medium text-white shadow-lg hover:bg-red-500 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        <div class="flex mt-4">
+          <button id="deleteImageButton" class="block px-3 py-2 text-sm font-medium text-center text-white transition bg-red-600 shadow-lg rounded-xl hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             <%= req.translations.imageDelete %>
           </button>
-          <button id="replaceImageButton" class="block rounded-xl ml-2 bg-neutral-800 px-3 py-2 text-center text-sm font-medium text-white shadow-lg hover:bg-neutral-600 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+          <button id="replaceImageButton" class="block px-3 py-2 ml-2 text-sm font-medium text-center text-white transition shadow-lg rounded-xl bg-neutral-800 hover:bg-neutral-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             <%= req.translations.imageReplace %>
           </button>
         </div>

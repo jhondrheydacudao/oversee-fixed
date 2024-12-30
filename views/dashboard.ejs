@@ -1,138 +1,138 @@
 
 <div>
-    <%- include('./components/template') %>
-    <!-- Main Content -->
+  <%- include('./components/template') %>
   <!-- Main Content -->
-  <main class="flex-grow container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center w-full mx-auto pb-4">
-      <!-- Welcome text and subtext on the left -->
-      <div class="flex flex-col">
-          <h1 class="text-xl font-semibold mb-0.5" style="font-family: 'Cabin';">Dashboard</h1>
-          <p class="text-gray-400 text-md">View your available resources and an overview of your account.</p>
+<!-- Main Content -->
+<main class="container flex-grow px-4 py-8 mx-auto">
+<div class="flex items-center justify-between w-full pb-4 mx-auto">
+    <!-- Welcome text and subtext on the left -->
+    <div class="flex flex-col">
+        <h1 class="text-xl font-semibold mb-0.5" style="font-family: 'Cabin';">Dashboard</h1>
+        <p class="text-gray-400 text-md">View your available resources and an overview of your account.</p>
+    </div>
+
+    <!-- Breadcrumbs on the right -->
+    <nav aria-label="Breadcrumb" class="inline-flex px-4 py-2 transition-colors duration-200 rounded-xl bg-white/5">
+        <ol role="list" class="flex items-center space-x-2">
+            <li>
+                <a href="#_" class="flex items-center gap-2 text-sm transition-colors duration-200 text-zinc-400 hover:text-zinc-200" aria-current="false">
+                    <svg
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="icon icon-tabler size-4 icons-tabler-outline icon-tabler-home"
+                    >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M5 12l-2 0l9 -9l9 9l-2 0"></path>
+                        <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"></path>
+                        <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
+                    </svg>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="flex items-center">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right size-4 text-zinc-400"
+                >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M9 6l6 6l-6 6"></path>
+                </svg>
+            </li>
+            <li>
+                <a href="#_" class="flex items-center gap-2 text-sm font-medium transition-colors duration-200 text-white/80 hover:text-white" aria-current="page">
+                    Dashboard
+                </a>
+            </li>
+        </ol>
+    </nav>
+</div>
+
+
+<!-- Welcome Message and Quick Links -->
+<div class="w-full mt-2 mb-8 border-l-4 border-blue-600 bg-blue-600/15 rounded-r-2xl">
+<div class="p-6">
+<h2 class="text-lg font-semibold text-white/90">Welcome back!</h2>
+<div class="space-y-5">
+  <p class="text-sm leading-5 text-white/60">
+    From the <%= name %> dashboard, you can manage your wallet, deploy resources (ex. a server) and upgrade your deployments.
+  </p>
+  <a class="transition hover:scale-95 cursor-pointer font-semibold gap-2 grow-0 items-center justify-center rounded-xl shrink-0 disabled:cursor-not-allowed inline-flex border focus:outline-none px-4 py-[9px] bg-blue-700 border-blue-700 text-white hover:bg-blue-600 hover:border-blue-600 focus:ring-4 focus:ring-blue-900 disabled:bg-blue-900 disabled:border-blue-900 disabled:text-blue-400 text-sm" href="/create-server">
+    <span class="pointer-events-none shrink-0">Get started</span>
+  </a>
+  <div class="flex flex-col items-start gap-3 p-4 text-blue-100 xs:flex-row rounded-xl bg-white/5" dismissable="false">
+    <div class="shrink-0">
+      <% if (announcement.type === 'warn') { %>
+        <!-- Warn Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="block w-5 h-5 text-yellow-500 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+        </svg>
+      <% } else if (announcement.type === 'status') { %>
+        <!-- Status Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="block w-5 h-5 text-green-500 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+        </svg>
+      <% } else { %>
+        <!-- Info Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="block w-5 h-5 text-blue-700 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+        </svg>
+      <% } %>
+
+          <h2 class="text-sm font-semibold leading-5 text-blue-100"><%= announcement.title %></h2>
+          <div class="text-sm leading-5 text-blue-100/70">
+            <p class="">
+             <%= announcement.description %>
+            </p>
+          </div>
       </div>
-  
-      <!-- Breadcrumbs on the right -->
-      <nav aria-label="Breadcrumb" class="inline-flex py-2 px-4 rounded-xl bg-white/5 transition-colors duration-200">
-          <ol role="list" class="flex items-center space-x-2">
-              <li>
-                  <a href="#_" class="text-sm flex items-center gap-2 text-zinc-400 hover:text-zinc-200 transition-colors duration-200" aria-current="false">
-                      <svg
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          class="icon icon-tabler size-4 icons-tabler-outline icon-tabler-home"
-                      >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                          <path d="M5 12l-2 0l9 -9l9 9l-2 0"></path>
-                          <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"></path>
-                          <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
-                      </svg>
-                      <span>Home</span>
-                  </a>
-              </li>
-              <li class="flex items-center">
-                  <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right size-4 text-zinc-400"
-                  >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                      <path d="M9 6l6 6l-6 6"></path>
-                  </svg>
-              </li>
-              <li>
-                  <a href="#_" class="text-sm flex items-center gap-2 font-medium text-white/80 hover:text-white transition-colors duration-200" aria-current="page">
-                      Dashboard
-                  </a>
-              </li>
-          </ol>
-      </nav>
-  </div>
-
-
-  <!-- Welcome Message and Quick Links -->
-  <div class="w-full border-l-4 mt-2 mb-8 bg-blue-600/15 border-blue-600 rounded-r-2xl">
-  <div class="p-6">
-  <h2 class="text-white/90 text-lg font-semibold">Welcome back!</h2>
-  <div class="space-y-5">
-    <p class="text-white/60 text-sm leading-5">
-      From the <%= name %> dashboard, you can manage your wallet, deploy resources (ex. a server) and upgrade your deployments.
-    </p>
-    <a class="transition hover:scale-95 cursor-pointer font-semibold gap-2 grow-0 items-center justify-center rounded-xl shrink-0 disabled:cursor-not-allowed inline-flex border focus:outline-none px-4 py-[9px] bg-blue-700 border-blue-700 text-white hover:bg-blue-600 hover:border-blue-600 focus:ring-4 focus:ring-blue-900 disabled:bg-blue-900 disabled:border-blue-900 disabled:text-blue-400 text-sm" href="/create-server">
-      <span class="pointer-events-none shrink-0">Get started</span>
-    </a>
-    <div class="flex flex-col xs:flex-row gap-3 items-start p-4 rounded-xl bg-white/5 text-blue-100" dismissable="false">
-      <div class="shrink-0">
-        <% if (announcement.type === 'warn') { %>
-          <!-- Warn Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="block shrink-0 h-5 w-5 text-yellow-500">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-          </svg>
-        <% } else if (announcement.type === 'status') { %>
-          <!-- Status Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="block shrink-0 h-5 w-5 text-green-500">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
-          </svg>
-        <% } else { %>
-          <!-- Info Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="block shrink-0 h-5 w-5 text-blue-700">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-          </svg>
-        <% } %>
-
-            <h2 class="text-sm leading-5 font-semibold text-blue-100"><%= announcement.title %></h2>
-            <div class="text-sm leading-5 text-blue-100/70">
-              <p class="">
-               <%= announcement.description %>
-              </p>
-            </div>
-        </div>
-      </div>
-      
     </div>
     
   </div>
-  </div>
-  <div>
-    <dl class="mt-4 grid grid-cols-1 divide-y divide-white/5 overflow-hidden rounded-2xl bg-white/5 shadow md:grid-cols-3 md:divide-y-0 md:divide-x">
+  
+</div>
+</div>
+<div>
+  <dl class="grid grid-cols-1 mt-4 overflow-hidden divide-y shadow divide-white/5 rounded-2xl bg-white/5 md:grid-cols-3 md:divide-y-0 md:divide-x">
+   
+          <div class="px-4 py-5 sm:p-6">
+            <dt class="text-base font-medium text-white">Total Ram</dt>
+            <dd class="flex items-baseline justify-between mt-1 md:block lg:flex">
+              <div class="flex items-baseline text-2xl font-semibold text-blue-500">
+                <%= max_resources.ram %> (MiB)
+              </div>
+            </dd>
+          </div>
+        
+          <div class="px-4 py-5 sm:p-6">
+            <dt class="text-base font-medium text-white">Total CPU</dt>
+            <dd class="flex items-baseline justify-between mt-1 md:block lg:flex">
+              <div class="flex items-baseline text-2xl font-semibold text-blue-500">
+             <%= max_resources.cores %> (cores)
+              </div>
+            </dd>
+          </div>
+          <div class="px-4 py-5 sm:p-6">
+            <dt class="text-base font-medium text-white">Total Disk</dt>
+            <dd class="flex items-baseline justify-between mt-1 md:block lg:flex">
+              <div class="flex items-baseline text-2xl font-semibold text-blue-500">
+              <%= max_resources.disk %> (GiB)
+              </div>
+            </dd>
+          </div>
      
-            <div class="px-4 py-5 sm:p-6">
-              <dt class="text-base font-medium text-white">Total Ram</dt>
-              <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
-                <div class="flex items-baseline text-2xl font-semibold text-orange-500">
-                  <%= max_resources.ram %> (MiB)
-                </div>
-              </dd>
-            </div>
-          
-            <div class="px-4 py-5 sm:p-6">
-              <dt class="text-base font-medium text-white">Total CPU</dt>
-              <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
-                <div class="flex items-baseline text-2xl font-semibold text-orange-500">
-               <%= max_resources.cores %> (cores)
-                </div>
-              </dd>
-            </div>
-            <div class="px-4 py-5 sm:p-6">
-              <dt class="text-base font-medium text-white">Total Disk</dt>
-              <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
-                <div class="flex items-baseline text-2xl font-semibold text-orange-500">
-                <%= max_resources.disk %> (GiB)
-                </div>
-              </dd>
-            </div>
-       
-      
-    </dl>
-  </div>
-  <%- include('./components/footer') %>
+    
+  </dl>
+</div>
+<%- include('./components/footer') %>
