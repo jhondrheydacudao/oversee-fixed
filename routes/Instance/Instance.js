@@ -34,7 +34,7 @@ router.get("/instances", isAuthenticated, async (req, res) => {
     res.render('instances', {
         req,
         user: req.user,
-        name: await db.get('name') || 'HydraPanel',
+        name: await db.get('name') || 'OverSee',
         logo: await db.get('logo') || false,
         instances,
         nodes,
@@ -77,7 +77,7 @@ router.get("/instance/:id", async (req, res) => {
         port,
         domain,
         user: req.user,
-        name: await db.get('name') || 'HydraPanel',
+        name: await db.get('name') || 'OverSee',
         logo: await db.get('logo') || false,
         files: await fetchFiles(instance, ""),
         addons: {

@@ -66,7 +66,7 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
     res.render('dashboard', {
       req,
       user: req.user,
-      name: await db.get('name') || 'HydraPanel',
+      name: await db.get('name') || 'OverSee',
       logo: await db.get('logo') || false,
       instances,
       nodes,
@@ -116,7 +116,7 @@ router.get("/create-server", isAuthenticated, async (req, res) => {
         res.render('create', {
             req,
             user: req.user,
-            name: await db.get('name') || 'HydraPanel',
+            name: await db.get('name') || 'OverSee',
             logo: await db.get('logo') || false,
             instances,
             nodes,
@@ -204,7 +204,7 @@ router.get('/afk', async (req, res) => {
     coins,
     user: req.user,
     users: await db.get('users') || [], 
-    name: await db.get('name') || 'HydraPanel',
+    name: await db.get('name') || 'OverSee',
     logo: await db.get('logo') || false
   });
 });
@@ -225,7 +225,7 @@ router.get('/transfer', async (req, res) => {
     coins,
     user: req.user,
     users: await db.get('users') || [], 
-    name: await db.get('name') || 'HydraPanel',
+    name: await db.get('name') || 'OverSee',
     logo: await db.get('logo') || false
   });
 });

@@ -79,7 +79,6 @@ async function loadAndActivatePlugins() {
                 manifest.manifestpath = manifestPath;
                 pluginList.push(manifest);
                 pluginNames.push(manifest.name);
-                log.init(`Loaded plugin: ${manifest.name}`);
 
                 const mainFilePath = path.join(pluginPath, manifest.main);
                 const pluginModule = require(mainFilePath);
@@ -92,7 +91,6 @@ async function loadAndActivatePlugins() {
 
                 if (pluginModule.router) {
                     router.use(`/${manifest.router}`, pluginModule.router);
-                    log.init(`Routes for plugin ${manifest.name} added`);
                 } else {
                     log.error(`Error: plugin ${manifest.name} has no 'router' property.`);
                 }
@@ -131,7 +129,7 @@ router.get('/admin/plugins', isAdmin, async (req, res) => {
         pluginsidebar,
         enabledPlugins,
         user: req.user,
-        name: await db.get('name') || 'HydraPanel',
+        name: await db.get('name') || 'OverSee',
         logo: await db.get('logo') || false
     });
 });
@@ -159,7 +157,7 @@ router.get('/admin/plugins/:dir/edit', isAdmin, async (req, res) => {
         dir,
         content: manifestJson,
         user: req.user,
-        name: await db.get('name') || 'HydraPanel',
+        name: await db.get('name') || 'OverSee',
         logo: await db.get('logo') || false
     });
 });
