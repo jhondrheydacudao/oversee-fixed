@@ -5,5 +5,10 @@
     "mode": "production",
     "version": "0.1.3",
     "ogTitle": "OverSee",
-    "ogDescription": "This is an instance of the OverSee - learn more at github.com/hydren-dev/OverSee"
+    "ogDescription": "This is an instance of the OverSee - learn more at github.com/hydren-dev/OverSee",
+    "total_resources": {
+        "ram": 4096,
+        "cores": 1,
+        "disk": 10
+    }
 } 

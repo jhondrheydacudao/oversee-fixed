@@ -136,3 +136,4 @@ tmp/
 bs-config.json
 plugins/plugins.json
 daemon
+package-lock.json
