@@ -282,13 +282,15 @@ router.get("/transfercoins", async (req, res) => {
         return res.redirect('../create-server?err=NOT_ENOUGH_RESOURCES');
       }
   
-      const newRam = requestedRam - availableRam;
-      const newCpu = requestedCore - availableCore;
+      const newRam = availableRam - requestedRam; // Deduct the requested RAM from available RAM
+      const newCpu = availableCore - requestedCore; // Deduct the requested cores from available cores
+      
       const newResources = {
-        ram: newRam,
-        disk: 10,
-        cores: newCpu
-      }
+          ram: newRam,
+          disk: 10, // Assuming 10 GiB disk is always allocated
+          cores: newCpu,
+      };
+      
       const Id = uuid().split('-')[0];
       const node = await db.get(`${nodeId}_node`);
       if (!node) {
@@ -343,9 +345,74 @@ router.get("/transfercoins", async (req, res) => {
     if (!instance.User === req.user.userId) {
       return res.redirect('/dashboard?err=DO_NOT_OWN')
     }
+    const resourcesKey = `resources-${req.user.email}`;
+    const userResources = await db.get(resourcesKey) || {};
+
+    const instanceRam = instance.Memory;
+    const instanceCPU = instance.Cpu;
+    userResources.ram = (userResources.ram || 0) + instanceRam;
+    userResources.cores = (userResources.cores || 0) + instanceCPU;
+    await db.set(resourcesKey, userResources);
     await deleteInstance(instance);
     res.redirect('/dashboard?err=DELETED');
   });
+
+  router.get('/buyresource/:resource', isAuthenticated,async (req, res) => {
+    try {
+        const resource = req.params.resource; // Access `resource` as a string
+        const coinsKey = `coins-${req.user.email}`;
+        const resourcesKey = `resources-${req.user.email}`;
+
+        const coins = await db.get(coinsKey);
+        const userResources = await db.get(resourcesKey) || {};
+
+        if (resource === 'ram') {
+            if (coins < 150) {
+                return res.redirect('../store?err=NOTENOUGHCOINS');
+            } else {
+                userResources.ram = (userResources.ram || 0) + 1024;
+                await db.set(resourcesKey, userResources);
+                await db.set(coinsKey, coins - 150); // Deduct coins
+                return res.redirect('../store?success=RAMPURCHASED');
+            }
+        } else if (resource === 'cpu') {
+            if (coins < 200) {
+                return res.redirect('../store?err=NOTENOUGHCOINS');
+            } else {
+                userResources.cores = (userResources.cores || 0) + 1;
+                await db.set(resourcesKey, userResources);
+                await db.set(coinsKey, coins - 200); // Deduct coins
+                return res.redirect('../store?success=CPUPURCHASED');
+            }
+        } else {
+            return res.redirect('../store?err=INVALIDRESOURCE');
+        }
+    } catch (error) {
+        console.error('Error processing buyresource request:', error);
+        return res.redirect('../store?err=SERVERERROR');
+    }
+});
+
+router.get('/store', isAuthenticated ,async (req, res) => {
+  if (!req.user) return res.redirect('/');
+  const email = req.user.email;
+  const coinsKey = `coins-${email}`;
+  
+  let coins = await db.get(coinsKey);
+  
+  if (!coins) {
+      coins = 0;
+      await db.set(coinsKey, coins);
+  }  
+  res.render('store', {
+    req,
+    coins,
+    user: req.user,
+    users: await db.get('users') || [], 
+    name: await db.get('name') || 'OverSee',
+    logo: await db.get('logo') || false
+  });
+});
 
 async function prepareRequestData(image, memory, cpu, ports, name, node, Id, variables, imagename) {
   const rawImages = await db.get('images');
