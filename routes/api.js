@@ -95,6 +95,7 @@ router.get('/api/auth/create-user', validateApiKey, async (req, res) => {
       userId = uuidv4();  // Generate a new userId if not provided
     }
 
+    
     const user = {
       userId: userId,
       username,

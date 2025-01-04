@@ -91,8 +91,32 @@ async function createUser(username, email, password) {
   const emailVerificationEnabled = settings.emailVerification || false;
 
   if (emailVerificationEnabled) {
+    const default_resources = {
+      ram: config.total_resources.ram,
+      disk: config.total_resources.disk,
+      cores: config.total_resources.cores
+    };
+    
+    const max_resources = await db.get('resources-'+ email)
+    if (!max_resources) {
+      console.log('Starting Resources Creation for '+ email);
+      await db.set('resources-' + email, default_resources);
+      console.log('Resources created for '+ email , await db.get('resources-'+ email));
+    }
     return addUserToUsersTable(username, email, password, false);
   } else {
+    const default_resources = {
+      ram: config.total_resources.ram,
+      disk: config.total_resources.disk,
+      cores: config.total_resources.cores
+    };
+    
+    const max_resources = await db.get('resources-'+ email)
+    if (!max_resources) {
+      console.log('Starting Resources Creation for '+ email);
+      await db.set('resources-' + email, default_resources);
+      console.log('Resources created for '+ email , await db.get('resources-'+ email));
+    }
     return addUserToUsersTable(username, email, password, true);
   }
 }

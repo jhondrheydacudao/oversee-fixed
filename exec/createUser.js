@@ -1,5 +1,6 @@
 const readline = require('readline');
 const { db } = require('../handlers/db.js');
+const config = require('../config.json')
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const CatLoggr = require('cat-loggr');
@@ -36,23 +37,58 @@ async function initializeUsersTable(username, email, password) {
     return db.set('users', users);
 }
 
-async function addUserToUsersTable(username, email, password) {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const userId = uuidv4();
-    const users = await db.get('users') || [];
-    users.push({ userId, username, email, password: hashedPassword, accessTo: [], admin: true, verified: true });
-    await db.set(`coins-${email}`, 0);
-    return db.set('users', users); 
-}
-
 async function createUser(username, email, password) {
-    const users = await db.get('users');
+    const users = await db.get('users') || {};
+  
     if (!users) {
-        return initializeUsersTable(username, email, password);
+      const default_resources = {
+        ram: config.total_resources.ram,
+        disk: config.total_resources.disk,
+        cores: config.total_resources.cores
+      };
+      
+      const max_resources = await db.get('resources-'+ email)
+      if (!max_resources) {
+        // console.log('Starting Resources Creation for '+ email);
+        await db.set('resources-' + email, default_resources);
+       //  console.log('Resources created for '+ email , await db.get('resources-'+ email));
+      }
+      return addUserToUsersTable(username, email, password, true);
     } else {
-        return addUserToUsersTable(username, email, password); 
+      const default_resources = {
+        ram: config.total_resources.ram,
+        disk: config.total_resources.disk,
+        cores: config.total_resources.cores
+      };
+      
+      const max_resources = await db.get('resources-'+ email)
+      if (!max_resources) {
+        console.log('Starting Resources Creation for '+ email);
+        await db.set('resources-' + email, default_resources);
+        console.log('Resources created for '+ email , await db.get('resources-'+ email));
+      }
+      return addUserToUsersTable(username, email, password, true);
     }
-}
+  }
+  
+  async function addUserToUsersTable(username, email, password, verified) {
+    try {
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const userId = uuidv4();
+      const verificationToken = verified ? null : generateRandomCode(30);
+      let users = await db.get('users') || [];
+      const newUser = { userId, username, email, password: hashedPassword, accessTo: [], admin: true, welcomeEmailSent: false, verified, verificationToken };
+      users.push(newUser);
+      await db.set('users', users);
+  
+  
+      return users;
+    } catch (error) {
+      console.error('Error adding user to database:', error);
+      throw error;
+    }
+  }
+  
 
 function askQuestion(question) {
     return new Promise((resolve) => {
