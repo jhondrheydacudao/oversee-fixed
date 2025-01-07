@@ -94,8 +94,8 @@ router.get("/instance/:id/plugins", async (req, res) => {
     }
 
     if(instance.suspended === true) {
-        return res.redirect('../../instance/' + id + '/suspended');
-    }
+      return res.redirect('../../instances?err=SUSPENDED');
+ }
 
     const config = require('../../config.json');
     const { port, domain } = config;
@@ -109,7 +109,7 @@ router.get("/instance/:id/plugins", async (req, res) => {
         port,
         domain,
         user: req.user,
-        name: await db.get('name') || 'OverSee',
+        name: await db.get('name') || 'HydraPanel',
         logo: await db.get('logo') || false,
         files: await fetchFiles(instance, ""),
         addons: {
@@ -122,17 +122,11 @@ router.get("/instance/:id/plugins/download", async (req, res) => {
   if (!req.user) return res.redirect('/');
 
   const { id } = req.params;
-  let { downloadUrl } = req.query; // Destructure downloadUrl from query
+  let { downloadUrl, plugin_name } = req.query; // Destructure downloadUrl from query
   if (!id) return res.redirect('/instances');
 
   let instance = await db.get(id + '_instance');
   if (!instance) return res.redirect('../instances');
-
-  const java = 'quay.io/skyport/java:21';
-
-  if (instance.Image !== java) {
-    return res.redirect(`../../instance/${id}`);
-  }
 
   const isAuthorized = await isUserAuthorizedForContainer(req.user.userId, instance.Id);
   if (!isAuthorized) {
@@ -143,10 +137,9 @@ router.get("/instance/:id/plugins/download", async (req, res) => {
     instance.suspended = false;
     db.set(id + '_instance', instance);
   }
-
-  if (instance.suspended === true) {
-    return res.redirect(`../../instance/${id}/suspended`);
-  }
+  if(instance.suspended === true) {
+    return res.redirect('../../instances?err=SUSPENDED');
+}
 
   try {
     // Remove </pre> from the downloadUrl if it exists
@@ -157,7 +150,7 @@ router.get("/instance/:id/plugins/download", async (req, res) => {
     // Prepare the request to upload the plugin
     const requestData = {
       method: 'post',
-      url: `http://${instance.Node.address}:${instance.Node.port}/fs/${instance.VolumeId}/files/plugin/${encodedDownloadUrl}`,
+      url: `http://${instance.Node.address}:${instance.Node.port}/fs/${instance.VolumeId}/files/plugin/${encodedDownloadUrl}/${plugin_name}`,
       auth: {
         username: 'Skyport',
         password: instance.Node.apiKey,
