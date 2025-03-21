@@ -1,9 +1,9 @@
 {
   "name": "OverSee",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "OverSee is an open source panel for managing and operating game servers and applications built using Node.js with Express and Dockerode.",
   "name": "OverSee",
-  "version": "1.0",
+  "version": "2.0",
   "description": "Open-Source panel inside dashboard",
   "main": "index.js",
   "bin": {
