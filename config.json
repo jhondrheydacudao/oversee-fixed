@@ -1,7 +1,7 @@
 {
-    "baseUri": "http://localhost:3001",
+    "baseUri": "http://big-select-tick.ngrok-free.app",
     "port": 3001,
-    "domain": "localhost",
+    "domain": "big-select-tick.ngrok-free.app",
     "mode": "production",
     "version": "0.2.0",
     "ogTitle": "OverSee-Fixed",
