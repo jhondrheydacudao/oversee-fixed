@@ -44,7 +44,7 @@
               <button @click="quantity++" class="bg-gray-700 px-2 py-1 rounded">➕</button>
           </div>
           <button 
-            @click="loading = true; window.location.href = `/buyresource/ram?amount=${quantity}`"
+            @click="loading = true; window.location.href = `/buyresource/ram`"
             :disabled="loading"
             class="w-full bg-orange-600 font-medium text-white py-2 rounded-full hover:bg-orange-700 transition">
               <span x-show="!loading">Buy RAM</span>
@@ -63,7 +63,7 @@
               <button @click="quantity++" class="bg-gray-700 px-2 py-1 rounded">➕</button>
           </div>
           <button 
-            @click="loading = true; window.location.href = `/buyresource/cpu?amount=${quantity}`"
+            @click="loading = true; window.location.href = `/buyresource/cpu`"
             :disabled="loading"
             class="w-full bg-orange-600 font-medium text-white py-2 rounded-full hover:bg-orange-700 transition">
               <span x-show="!loading">Buy CPU</span>
@@ -82,7 +82,7 @@
               <button @click="quantity++" class="bg-gray-700 px-2 py-1 rounded">➕</button>
           </div>
           <button 
-            @click="loading = true; window.location.href = `/buyresource/disk?amount=${quantity}`"
+            @click="loading = true; window.location.href = `/buyresource/disk?quantity=`"
             :disabled="loading"
             class="w-full bg-orange-600 font-medium text-white py-2 rounded-full hover:bg-orange-700 transition">
               <span x-show="!loading">Buy Disk</span>
