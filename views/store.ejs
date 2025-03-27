@@ -37,14 +37,14 @@
       <div class="bg-white/5 rounded-2xl p-6 flex flex-col items-center" x-data="{ quantity: 1, loading: false }">
           <h3 class="text-xl font-semibold mb-2">RAM</h3>
           <p class="text-gray-400 text-sm mb-3">Upgrade your server's memory</p>
-          <span class="text-lg font-medium">150 Coins / GB</span>
+          <span class="text-lg font-medium">400 Coins / GB</span>
           <div class="flex items-center space-x-2 my-3">
               <button @click="if(quantity > 1) quantity--" class="bg-gray-700 px-2 py-1 rounded">➖</button>
               <span class="text-lg font-medium w-8 text-center" x-text="quantity"></span>
               <button @click="quantity++" class="bg-gray-700 px-2 py-1 rounded">➕</button>
           </div>
           <button 
-            @click="loading = true; window.location.href = `/buyresource/ram`"
+            @click="loading = true; window.location.href = `/buyresource/ram?quantity=` + quantity"
             :disabled="loading"
             class="w-full bg-orange-600 font-medium text-white py-2 rounded-full hover:bg-orange-700 transition">
               <span x-show="!loading">Buy RAM</span>
@@ -56,14 +56,14 @@
       <div class="bg-white/5 rounded-2xl p-6 flex flex-col items-center" x-data="{ quantity: 1, loading: false }">
           <h3 class="text-xl font-semibold mb-2">CPU</h3>
           <p class="text-gray-400 text-sm mb-3">Boost your processing power</p>
-          <span class="text-lg font-medium">200 Coins / Core</span>
+          <span class="text-lg font-medium">500 Coins / Core</span>
           <div class="flex items-center space-x-2 my-3">
               <button @click="if(quantity > 1) quantity--" class="bg-gray-700 px-2 py-1 rounded">➖</button>
               <span class="text-lg font-medium w-8 text-center" x-text="quantity"></span>
               <button @click="quantity++" class="bg-gray-700 px-2 py-1 rounded">➕</button>
           </div>
           <button 
-            @click="loading = true; window.location.href = `/buyresource/cpu`"
+            @click="loading = true; window.location.href = `/buyresource/cpu?quantity=` + quantity"
             :disabled="loading"
             class="w-full bg-orange-600 font-medium text-white py-2 rounded-full hover:bg-orange-700 transition">
               <span x-show="!loading">Buy CPU</span>
@@ -75,14 +75,14 @@
       <div class="bg-white/5 rounded-2xl p-6 flex flex-col items-center" x-data="{ quantity: 1, loading: false }">
           <h3 class="text-xl font-semibold mb-2">Disk</h3>
           <p class="text-gray-400 text-sm mb-3">Expand your storage capacity</p>
-          <span class="text-lg font-medium">250 Coins / 10GB</span>
+          <span class="text-lg font-medium">400 Coins / 10GB</span>
           <div class="flex items-center space-x-2 my-3">
               <button @click="if(quantity > 1) quantity--" class="bg-gray-700 px-2 py-1 rounded">➖</button>
               <span class="text-lg font-medium w-8 text-center" x-text="quantity"></span>
               <button @click="quantity++" class="bg-gray-700 px-2 py-1 rounded">➕</button>
           </div>
           <button 
-            @click="loading = true; window.location.href = `/buyresource/disk?quantity=`"
+            @click="loading = true; window.location.href = `/buyresource/disk?quantity=` + quantity"
             :disabled="loading"
             class="w-full bg-orange-600 font-medium text-white py-2 rounded-full hover:bg-orange-700 transition">
               <span x-show="!loading">Buy Disk</span>
