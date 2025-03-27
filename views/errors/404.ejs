@@ -1,24 +1,43 @@
 <!doctype html>
 <html class="h-full">
 <head>
+<link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
+    <script src="https://cdn.tailwindcss.com"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= name %></title>
+  <title><%= name %> - 404 Not Found</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <meta name="description" content="404 Page Not Found">
   <meta name="robots" content="noindex, nofollow">
 </head>
-<body style="font-family: 'IBM Plex Sans'" class="bg-[#181818] h-full">
-  <div class="flex items-center justify-center min-h-screen px-4 py-8">
-    <div class="text-center">
-      <h1 class="mb-4 text-7xl tracking-tight font-medium lg:text-9xl text-white">404</h1>
-      <p class="mb-4 text-3xl tracking-tight font-bold md:text-4xl text-white">Something's missing.</p>
-      <p class="mb-4 text-lg font-light text-neutral-500">Sorry, we can't find that page.</p>
-      <a href="../" class="inline-flex items-center text-white bg-white/5 hover:bg-white/10 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-xl text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900 my-4 transition-all duration-300 ease-in-out">Back to <%= name %></a>
+<body style="font-family: 'IBM Plex Sans', sans-serif;" class="bg-gradient-to-br from-[#1a1a1a] to-[#121212] h-full text-white">
+
+  <div class="flex items-center justify-center min-h-screen px-6 py-8">
+    <div class="text-center max-w-lg">
+      <!-- Large 404 Text -->
+      <h1 class="text-8xl lg:text-9xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-300 to-gray-500">404</h1>
+      
+      <!-- Subtitle -->
+      <p class="mt-4 text-2xl lg:text-3xl font-semibold">Oops! Page not found.</p>
+      <p class="mt-2 text-lg text-neutral-400">The page you're looking for doesn't exist or has been moved.</p>
+
+      <!-- Button -->
+      <a href="../" class="mt-6 inline-block px-6 py-3 text-white bg-gray-800 hover:bg-gray-700 rounded-lg text-lg font-medium shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+        ⬅ Back to <%= name %>
+      </a>
     </div>   
   </div>
+
 </body>
 </html>
