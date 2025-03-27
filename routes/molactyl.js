@@ -178,6 +178,63 @@ router.get('/create', isAuthenticated, async (req, res) => {
     }
 });
 
+router.get('/buyresource/:resource', isAuthenticated,async (req, res) => {
+    try {
+        const resource = req.params.resource; // Access `resource` as a string
+        const coinsKey = `coins-${req.user.email}`;
+        const resourcesKey = `resources-${req.user.email}`;
+
+        const coins = await db.get(coinsKey);
+        const userResources = await db.get(resourcesKey) || {};
+
+        if (resource === 'ram') {
+            if (coins < 150) {
+                return res.redirect('../store?err=NOTENOUGHCOINS');
+            } else {
+                userResources.ram = (userResources.ram || 0) + 1024;
+                await db.set(resourcesKey, userResources);
+                await db.set(coinsKey, coins - 150); // Deduct coins
+                return res.redirect('../store?success=RAMPURCHASED');
+            }
+        } else if (resource === 'cpu') {
+            if (coins < 200) {
+                return res.redirect('../store?err=NOTENOUGHCOINS');
+            } else {
+                userResources.cores = (userResources.cores || 0) + 1;
+                await db.set(resourcesKey, userResources);
+                await db.set(coinsKey, coins - 200); // Deduct coins
+                return res.redirect('../store?success=CPUPURCHASED');
+            }
+        } else {
+            return res.redirect('../store?err=INVALIDRESOURCE');
+        }
+    } catch (error) {
+        console.error('Error processing buyresource request:', error);
+        return res.redirect('../store?err=SERVERERROR');
+    }
+});
+
+router.get('/store', isAuthenticated ,async (req, res) => {
+  if (!req.user) return res.redirect('/');
+  const email = req.user.email;
+  const coinsKey = `coins-${email}`;
+  
+  let coins = await db.get(coinsKey);
+  
+  if (!coins) {
+      coins = 0;
+      await db.set(coinsKey, coins);
+  }  
+  res.render('store', {
+    req,
+    coins,
+    user: req.user,
+    users: await db.get('users') || [], 
+    name: await db.get('name') || 'OverSee',
+    logo: await db.get('logo') || false
+  });
+});
+
 // ------------------------- Delete Instance -------------------------
 router.get('/delete/:id', isAuthenticated, async (req, res) => {
     try {
