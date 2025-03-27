@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>dashboard - Executorx Hosting Panel</title>
-    <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
-    <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 
@@ -14,7 +14,7 @@
   <!-- Main Content -->
   <main class="container flex-grow px-6 py-8 mx-auto animate-fade-in">
     <div class="flex items-center justify-between w-full pb-6 mx-auto animate-slide-in">
-      <!-- Welcome text and subtext on the left -->
+      <!-- Welcome text and subtext -->
       <div class="flex flex-col">
         <h1 class="text-2xl font-bold text-white" style="font-family: 'Cabin';">Dashboard</h1>
         <p class="text-gray-400 text-md">Monitor and manage your resources effectively.</p>
@@ -41,24 +41,42 @@
       <p class="text-gray-300">Manage your wallet, deploy resources, and upgrade deployments.</p>
     </div>
 
-    <!-- Resource Stats -->
+    <!-- Resource Stats with Icons -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8 animate-fade-in">
+      
+      <!-- Total RAM -->
       <div class="p-6 bg-white/10 rounded-xl shadow-md text-center hover:scale-105 transition-transform">
-        <h3 class="text-lg font-medium text-white">Total RAM</h3>
+        <h3 class="text-lg font-medium text-white flex items-center justify-center gap-2">
+          <img src="/assets/ram-logo.png" alt="RAM Logo" class="w-6 h-6">
+          Total RAM
+        </h3>
         <p class="text-3xl font-bold text-blue-400"><%= max_resources.ram %> MiB</p>
       </div>
+
+      <!-- Total CPU -->
       <div class="p-6 bg-white/10 rounded-xl shadow-md text-center hover:scale-105 transition-transform">
-        <h3 class="text-lg font-medium text-white">Total CPU</h3>
+        <h3 class="text-lg font-medium text-white flex items-center justify-center gap-2">
+          <img src="/assets/cpu-logo.png" alt="CPU Logo" class="w-6 h-6">
+          Total CPU
+        </h3>
         <p class="text-3xl font-bold text-blue-400"><%= max_resources.cores %> Cores</p>
       </div>
+
+      <!-- Total Disk -->
       <div class="p-6 bg-white/10 rounded-xl shadow-md text-center hover:scale-105 transition-transform">
-        <h3 class="text-lg font-medium text-white">Total Disk</h3>
+        <h3 class="text-lg font-medium text-white flex items-center justify-center gap-2">
+          <img src="/assets/disk-logo.png" alt="Disk Logo" class="w-6 h-6">
+          Total Disk
+        </h3>
         <p class="text-3xl font-bold text-blue-400"><%= max_resources.disk %> GiB</p>
       </div>
+
     </div>
 
     <!-- Upgrade, Manage, and Create Server Boxes -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8 animate-fade-in">
+      
+      <!-- Upgrade Resources -->
       <div class="p-6 bg-green-700/20 rounded-xl shadow-md text-center hover:scale-105 transition-transform">
         <h3 class="text-lg font-medium text-green-400">Upgrade Resources</h3>
         <p class="text-gray-300">Need more power? Upgrade your RAM, CPU, or storage.</p>
@@ -66,6 +84,8 @@
           <i class="fas fa-arrow-up"></i> Upgrade Now
         </a>
       </div>
+
+      <!-- Manage Servers -->
       <div class="p-6 bg-yellow-700/20 rounded-xl shadow-md text-center hover:scale-105 transition-transform">
         <h3 class="text-lg font-medium text-yellow-400">Manage Servers</h3>
         <p class="text-gray-300">View, configure, and control your deployed servers.</p>
@@ -73,6 +93,8 @@
           <i class="fas fa-cogs"></i> Manage Servers
         </a>
       </div>
+
+      <!-- Create Server -->
       <div class="p-6 bg-blue-700/20 rounded-xl shadow-md text-center hover:scale-105 transition-transform">
         <h3 class="text-lg font-medium text-blue-400">Create Server</h3>
         <p class="text-gray-300">Deploy a new server with ease.</p>
@@ -80,7 +102,9 @@
           <i class="fas fa-plus-circle"></i> Create Server
         </a>
       </div>
+
     </div>
+
   </main>
   <%- include('./components/footer') %>
 </div>
