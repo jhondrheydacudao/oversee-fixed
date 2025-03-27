@@ -99,140 +99,68 @@ router.ws('/afkwspath', async (ws, req) => {
     });
 });
 
-// ------------------------- Create Server Route -------------------------
-router.get("/create-server", isAuthenticated, async (req, res) => {
-    if (!req.user) return res.redirect('/');
-
+// ------------------------- Buy Resources Route (RAM, CPU, Disk) -------------------------
+router.get('/buyresource/:resource', isAuthenticated, async (req, res) => {
     try {
-        const userId = req.user.userId;
-        const users = await db.get('users') || [];
-        const authenticatedUser = users.find(user => user.userId === userId);
-        let instances = await db.get(`${userId}_instances`) || [];
-
-        for (const instanceId of (authenticatedUser?.accessTo || [])) {
-            const instanceData = await db.get(`${instanceId}_instance`);
-            if (instanceData) instances.push(instanceData);
-        }
-
-        res.render('create', {
-            req,
-            user: req.user,
-            name: await db.get('name') || 'OverSee',
-            logo: await db.get('logo') || false,
-            instances,
-            nodes: await db.get('nodes') || [],
-            images: await db.get('images') || [],
-            config
-        });
-
-    } catch (error) {
-        console.error('Error loading create-server page:', error);
-        res.status(500).send("Internal Server Error");
-    }
-});
-
-// ------------------------- Create Instance -------------------------
-router.get('/create', isAuthenticated, async (req, res) => {
-    try {
-        const { imageName, ram, cpu, ports, nodeId, name, user, primary } = req.query;
-        if (!imageName || !ram || !cpu || !ports || !nodeId || !name || !user || !primary) {
-            return res.redirect('../create-server?err=MISSINGFIELDS');
-        }
-
-        const requestedRam = parseInt(ram, 10);
-        const requestedCore = parseInt(cpu, 10);
-        const user_resources = await db.get(`resources-${req.user.email}`) || config.total_resources;
-
-        if (requestedRam > user_resources.ram || requestedCore > user_resources.cores) {
-            return res.redirect('../create-server?err=NOT_ENOUGH_RESOURCES');
-        }
-
-        const Id = uuid().split('-')[0];
-        const node = await db.get(`${nodeId}_node`);
-        if (!node) return res.status(400).json({ error: 'Invalid node' });
-
-        const response = await axios({
-            method: 'post',
-            url: `http://${node.address}:${node.port}/instances/create`,
-            auth: { username: 'Skyport', password: node.apiKey },
-            headers: { 'Content-Type': 'application/json' },
-            data: { Name: name, Id, Memory: requestedRam, Cpu: requestedCore, Ports: ports }
-        });
-
-        const newResources = {
-            ram: user_resources.ram - requestedRam,
-            cores: user_resources.cores - requestedCore
-        };
-
-        await db.set(`resources-${req.user.email}`, newResources);
-        await db.set(`${Id}_instance`, {
-            Name: name, Id, Node: node, User: user, ContainerId: response.data.containerId,
-            Memory: requestedRam, Cpu: requestedCore, Ports: ports, Primary: primary, Image: imageName
-        });
-
-        logAudit(req.user.userId, req.user.username, 'instance:create', req.ip);
-        res.redirect('../dashboard?err=CREATED');
-    } catch (error) {
-        console.error('Error creating instance:', error);
-        res.redirect('../create-server?err=INTERNALERROR');
-    }
-});
-
-router.get('/buyresource/:resource', isAuthenticated,async (req, res) => {
-    try {
-        const resource = req.params.resource; // Access `resource` as a string
+        const resource = req.params.resource;
         const coinsKey = `coins-${req.user.email}`;
         const resourcesKey = `resources-${req.user.email}`;
 
-        const coins = await db.get(coinsKey);
-        const userResources = await db.get(resourcesKey) || {};
+        const coins = (await db.get(coinsKey)) || 0;
+        const userResources = (await db.get(resourcesKey)) || {};
 
-        if (resource === 'ram') {
-            if (coins < 150) {
-                return res.redirect('../store?err=NOTENOUGHCOINS');
-            } else {
-                userResources.ram = (userResources.ram || 0) + 1024;
-                await db.set(resourcesKey, userResources);
-                await db.set(coinsKey, coins - 150); // Deduct coins
-                return res.redirect('../store?success=RAMPURCHASED');
-            }
-        } else if (resource === 'cpu') {
-            if (coins < 200) {
-                return res.redirect('../store?err=NOTENOUGHCOINS');
-            } else {
-                userResources.cores = (userResources.cores || 0) + 1;
-                await db.set(resourcesKey, userResources);
-                await db.set(coinsKey, coins - 200); // Deduct coins
-                return res.redirect('../store?success=CPUPURCHASED');
-            }
-        } else {
+        const prices = {
+            ram: 150,  // Cost per 1GB RAM
+            cpu: 200,  // Cost per 1 CPU core
+            disk: 100  // Cost per 10GB Disk
+        };
+
+        const amounts = {
+            ram: 1024,   // 1GB
+            cpu: 1,      // 1 core
+            disk: 10240  // 10GB
+        };
+
+        if (!prices[resource]) {
             return res.redirect('../store?err=INVALIDRESOURCE');
         }
+
+        if (coins < prices[resource]) {
+            return res.redirect('../store?err=NOTENOUGHCOINS');
+        }
+
+        // Add resource and deduct coins
+        userResources[resource] = (userResources[resource] || 0) + amounts[resource];
+        await db.set(resourcesKey, userResources);
+        await db.set(coinsKey, coins - prices[resource]);
+
+        return res.redirect(`../store?success=${resource.toUpperCase()}PURCHASED`);
     } catch (error) {
         console.error('Error processing buyresource request:', error);
         return res.redirect('../store?err=SERVERERROR');
     }
 });
 
-router.get('/store', isAuthenticated ,async (req, res) => {
-  if (!req.user) return res.redirect('/');
-  const email = req.user.email;
-  const coinsKey = `coins-${email}`;
+// ------------------------- Store Route -------------------------
+router.get('/store', isAuthenticated, async (req, res) => {
+    if (!req.user) return res.redirect('/');
+    const email = req.user.email;
+    const coinsKey = `coins-${email}`;
+
+    let coins = await db.get(coinsKey);
   
-  let coins = await db.get(coinsKey);
-  
-  if (!coins) {
-      coins = 0;
-      await db.set(coinsKey, coins);
-  }  
-  res.render('store', {
-    req,
-    coins,
-    user: req.user,
-    users: await db.get('users') || [], 
-    name: await db.get('name') || 'OverSee',
-    logo: await db.get('logo') || false
-  });
+    if (!coins) {
+        coins = 0;
+        await db.set(coinsKey, coins);
+    }  
+    res.render('store', {
+        req,
+        coins,
+        user: req.user,
+        users: await db.get('users') || [], 
+        name: await db.get('name') || 'OverSee',
+        logo: await db.get('logo') || false
+    });
 });
 
 // ------------------------- Delete Instance -------------------------
