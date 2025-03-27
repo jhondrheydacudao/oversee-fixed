@@ -367,21 +367,21 @@ router.get("/transfercoins", async (req, res) => {
         const userResources = await db.get(resourcesKey) || { ram: 0, cores: 0, disk: 0 };
 
         if (resource === 'ram') {
-            if (coins < 150) return res.redirect('../store?err=NOTENOUGHCOINS');
+            if (coins < 400) return res.redirect('../store?err=NOTENOUGHCOINS');
             userResources.ram += 1024; // Add 1GB RAM
             await db.set(coinsKey, coins - 150);
             await db.set(resourcesKey, userResources);
             return res.redirect('../store?success=RAMPURCHASED');
         } 
         else if (resource === 'cpu') {
-            if (coins < 200) return res.redirect('../store?err=NOTENOUGHCOINS');
+            if (coins < 500) return res.redirect('../store?err=NOTENOUGHCOINS');
             userResources.cores += 1; // Add 1 CPU core
             await db.set(coinsKey, coins - 200);
             await db.set(resourcesKey, userResources);
             return res.redirect('../store?success=CPUPURCHASED');
         } 
         else if (resource === 'disk') {
-            if (coins < 100) return res.redirect('../store?err=NOTENOUGHCOINS');
+            if (coins < 400) return res.redirect('../store?err=NOTENOUGHCOINS');
             userResources.disk += 10; // Add 10GB disk space
             await db.set(coinsKey, coins - 100);
             await db.set(resourcesKey, userResources);
