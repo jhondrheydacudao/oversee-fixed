@@ -2,39 +2,50 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuid } = require('uuid');
 const axios = require('axios');
+const bcrypt = require('bcrypt');
+const WebSocket = require('ws');
+const path = require('path');
+const fs = require('fs');
+const nodemailer = require('nodemailer');
+const { logAudit } = require('../handlers/auditlog.js');
+const { sendTestEmail } = require('../handlers/email.js');
+const { isAuthenticated } = require('../handlers/auth.js');
 const { db } = require('../handlers/db.js');
 const config = require('../config.json');
-const { isAuthenticated } = require('../handlers/auth.js');
-const { logAudit } = require('../handlers/auditlog.js');
 
+const saltRounds = 10;
+
+// ------------------------- Dashboard Route -------------------------
 router.get("/dashboard", isAuthenticated, async (req, res) => {
+    if (!req.user) return res.redirect('/');
+
     try {
-        if (!req.user) return res.redirect('/');
-
+        let instances = [];
         const userId = req.user.userId;
-        let instances = await db.get(`${userId}_instances`) || [];
-
         const users = await db.get('users') || [];
         const authenticatedUser = users.find(user => user.userId === userId);
-        if (authenticatedUser?.accessTo) {
-            for (const instanceId of authenticatedUser.accessTo) {
+        
+        if (req.query.see === "other") {
+            instances = (await db.get('instances'))?.filter(instance => instance.User !== userId) || [];
+        } else {
+            instances = await db.get(`${userId}_instances`) || [];
+            for (const instanceId of (authenticatedUser?.accessTo || [])) {
                 const instanceData = await db.get(`${instanceId}_instance`);
                 if (instanceData) instances.push(instanceData);
             }
         }
 
+        // Fetch announcement
         const announcement = await db.get('announcement') || {
             title: 'Change me',
             description: 'Change me from admin settings',
             type: 'warn'
         };
 
-        const resourcesKey = `resources-${req.user.email}`;
-        let max_resources = await db.get(resourcesKey);
-        if (!max_resources) {
-            max_resources = { ...config.total_resources };
-            await db.set(resourcesKey, max_resources);
-        }
+        await db.set('announcement', announcement);
+
+        // Fetch user resources
+        const max_resources = await db.get(`resources-${req.user.email}`) || config.total_resources;
 
         res.render('dashboard', {
             req,
@@ -43,31 +54,64 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
             logo: await db.get('logo') || false,
             instances,
             nodes: await db.get('nodes') || [],
-            max_resources,
             images: await db.get('images') || [],
+            max_resources,
             announcement,
             config
         });
+
     } catch (error) {
-        console.error("Error loading dashboard:", error);
+        console.error('Error loading dashboard:', error);
         res.status(500).send("Internal Server Error");
     }
 });
 
+// ------------------------- WebSocket AFK Path -------------------------
+router.ws('/afkwspath', async (ws, req) => {
+    if (!req.user || !req.user.email || !req.user.userId) {
+        console.error('WebSocket connection failed: Missing user data.');
+        return ws.close();
+    }
+
+    const earners = {};
+    const timeConf = parseInt(process.env.AFK_TIME || "60");
+    let time = timeConf;
+
+    if (earners[req.user.email]) {
+        console.error(`User ${req.user.email} is already earning.`);
+        return ws.close();
+    }
+
+    earners[req.user.email] = true;
+    const interval = setInterval(async () => {
+        if (time-- <= 0) {
+            time = timeConf;
+            ws.send(JSON.stringify({ type: "coin" }));
+            const coins = (await db.get(`coins-${req.user.email}`)) || 0;
+            await db.set(`coins-${req.user.email}`, coins + 5);
+        }
+        ws.send(JSON.stringify({ type: "count", amount: time }));
+    }, 1000);
+
+    ws.on('close', () => {
+        delete earners[req.user.email];
+        clearInterval(interval);
+    });
+});
+
+// ------------------------- Create Server Route -------------------------
 router.get("/create-server", isAuthenticated, async (req, res) => {
+    if (!req.user) return res.redirect('/');
+
     try {
-        if (!req.user) return res.redirect('/');
-
         const userId = req.user.userId;
-        let instances = await db.get(`${userId}_instances`) || [];
-
         const users = await db.get('users') || [];
         const authenticatedUser = users.find(user => user.userId === userId);
-        if (authenticatedUser?.accessTo) {
-            for (const instanceId of authenticatedUser.accessTo) {
-                const instanceData = await db.get(`${instanceId}_instance`);
-                if (instanceData) instances.push(instanceData);
-            }
+        let instances = await db.get(`${userId}_instances`) || [];
+
+        for (const instanceId of (authenticatedUser?.accessTo || [])) {
+            const instanceData = await db.get(`${instanceId}_instance`);
+            if (instanceData) instances.push(instanceData);
         }
 
         res.render('create', {
@@ -80,106 +124,74 @@ router.get("/create-server", isAuthenticated, async (req, res) => {
             images: await db.get('images') || [],
             config
         });
+
     } catch (error) {
-        console.error("Error loading create-server:", error);
+        console.error('Error loading create-server page:', error);
         res.status(500).send("Internal Server Error");
     }
 });
 
-router.get("/create", isAuthenticated, async (req, res) => {
+// ------------------------- Create Instance -------------------------
+router.get('/create', isAuthenticated, async (req, res) => {
     try {
-        const { imageName, ram, cpu, disk, ports, nodeId, name, user, primary } = req.query;
-        if (!imageName || !ram || !cpu || !disk || !ports || !nodeId || !name || !user || !primary) {
-            return res.status(400).json({ error: 'Missing parameters' });
+        const { imageName, ram, cpu, ports, nodeId, name, user, primary } = req.query;
+        if (!imageName || !ram || !cpu || !ports || !nodeId || !name || !user || !primary) {
+            return res.redirect('../create-server?err=MISSINGFIELDS');
         }
 
         const requestedRam = parseInt(ram, 10);
-        const requestedCpu = parseInt(cpu, 10);
-        const requestedDisk = parseInt(disk, 10);
+        const requestedCore = parseInt(cpu, 10);
+        const user_resources = await db.get(`resources-${req.user.email}`) || config.total_resources;
 
-        const resourcesKey = `resources-${req.user.email}`;
-        let userResources = await db.get(resourcesKey);
-        if (!userResources || requestedRam > userResources.ram || requestedCpu > userResources.cores || requestedDisk > userResources.disk) {
+        if (requestedRam > user_resources.ram || requestedCore > user_resources.cores) {
             return res.redirect('../create-server?err=NOT_ENOUGH_RESOURCES');
         }
 
+        const Id = uuid().split('-')[0];
         const node = await db.get(`${nodeId}_node`);
         if (!node) return res.status(400).json({ error: 'Invalid node' });
 
-        const instanceId = uuid().split('-')[0];
-        const requestData = {
+        const response = await axios({
             method: 'post',
             url: `http://${node.address}:${node.port}/instances/create`,
             auth: { username: 'Skyport', password: node.apiKey },
             headers: { 'Content-Type': 'application/json' },
-            data: { Name: name, Id: instanceId, Image: imageName, Memory: requestedRam, Cpu: requestedCpu, Disk: requestedDisk, ExposedPorts: {}, PortBindings: {}, variables: {} }
+            data: { Name: name, Id, Memory: requestedRam, Cpu: requestedCore, Ports: ports }
+        });
+
+        const newResources = {
+            ram: user_resources.ram - requestedRam,
+            cores: user_resources.cores - requestedCore
         };
 
-        const response = await axios(requestData);
+        await db.set(`resources-${req.user.email}`, newResources);
+        await db.set(`${Id}_instance`, {
+            Name: name, Id, Node: node, User: user, ContainerId: response.data.containerId,
+            Memory: requestedRam, Cpu: requestedCore, Ports: ports, Primary: primary, Image: imageName
+        });
 
-        userResources.ram -= requestedRam;
-        userResources.cores -= requestedCpu;
-        userResources.disk -= requestedDisk;
-        await db.set(resourcesKey, userResources);
-
-        await db.set(`${instanceId}_instance`, { ...response.data, User: req.user.userId });
+        logAudit(req.user.userId, req.user.username, 'instance:create', req.ip);
         res.redirect('../dashboard?err=CREATED');
     } catch (error) {
-        console.error("Error creating server:", error);
+        console.error('Error creating instance:', error);
         res.redirect('../create-server?err=INTERNALERROR');
     }
 });
 
+// ------------------------- Delete Instance -------------------------
 router.get('/delete/:id', isAuthenticated, async (req, res) => {
     try {
         const { id } = req.params;
-        if (!id) return res.redirect('/dashboard');
-
         const instance = await db.get(`${id}_instance`);
-        if (!instance || instance.User !== req.user.userId) {
-            return res.redirect('/dashboard?err=DO_NOT_OWN');
-        }
-
-        const resourcesKey = `resources-${req.user.email}`;
-        let userResources = await db.get(resourcesKey);
-        if (userResources) {
-            userResources.ram += instance.Memory;
-            userResources.cores += instance.Cpu;
-            userResources.disk += instance.Disk;
-            await db.set(resourcesKey, userResources);
-        }
+        if (!instance || instance.User !== req.user.userId) return res.redirect('/dashboard?err=DO_NOT_OWN');
 
         await axios.get(`http://Skyport:${instance.Node.apiKey}@${instance.Node.address}:${instance.Node.port}/instances/${instance.ContainerId}/delete`);
         await db.delete(`${id}_instance`);
+
         res.redirect('/dashboard?err=DELETED');
     } catch (error) {
-        console.error("Error deleting instance:", error);
+        console.error('Error deleting instance:', error);
         res.redirect('/dashboard?err=ERROR');
-    }
-});
-
-router.get('/buyresource/:resource', isAuthenticated, async (req, res) => {
-    try {
-        const resource = req.params.resource;
-        const coinsKey = `coins-${req.user.email}`;
-        const resourcesKey = `resources-${req.user.email}`;
-
-        let coins = await db.get(coinsKey) || 0;
-        let userResources = await db.get(resourcesKey) || { ram: 0, cores: 0, disk: 0 };
-
-        const prices = { ram: 400, cpu: 300, disk: 400 };
-        if (!prices[resource] || coins < prices[resource]) {
-            return res.redirect('../store?err=NOTENOUGHCOINS');
-        }
-
-        userResources[resource] += resource === 'cpu' ? 1 : 1024;
-        await db.set(resourcesKey, userResources);
-        await db.set(coinsKey, coins - prices[resource]);
-
-        res.redirect('../store?success=PURCHASED');
-    } catch (error) {
-        console.error("Error processing buyresource:", error);
-        res.redirect('../store?err=SERVERERROR');
     }
 });
 
