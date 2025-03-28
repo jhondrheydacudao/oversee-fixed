@@ -1,5 +1,5 @@
 {
-    "baseUri": "http://big-select-tick.ngrok-free.app",
+    "baseUri": "38.242.196.10:25571",
     "port": 25571,
     "domain": "big-select-tick.ngrok-free.app",
     "mode": "production",
