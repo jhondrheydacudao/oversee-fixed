@@ -1,6 +1,6 @@
 {
-    "baseUri": "38.242.196.10:25571",
-    "port": 25571,
+    "baseUri": "big-select-tick.ngrok-free.app",
+    "port": 3001,
     "domain": "big-select-tick.ngrok-free.app",
     "mode": "production",
     "version": "0.2.0",
