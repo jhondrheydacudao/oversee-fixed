@@ -261,7 +261,7 @@ router.get("/transfercoins", async (req, res) => {
       req.query;
   
     // Check for missing parameters
-    if (!imageName || !ram || !cpu || !disk || !ports || !nodeId || !name || !user || !primary) {
+    if (!imageName || !ram || !cpu || !ports || !nodeId || !name || !user || !primary) {
       return res.status(400).json({ error: 'Missing parameters' });
     }
   
