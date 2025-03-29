@@ -3,28 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= name %></title>
+  <title>Create an Account</title>
   <link href="../assets/tailwind.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
   <link rel="preconnect" href="https://cdn.fontshare.com">
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@500,300,600,400,700&display=swap" rel="stylesheet">
   <style>
-    .dark-mode {
-      background: #0d0d0d;
-      color: white;
+    /* Background GIF with overlay */
+    body {
+      background: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW1peGU5bG1nYWNpbXc2eTEwc2FvZnBpeW83eHEyZWxpanFwNXViayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2PWBLDJ2KtB1X6o9vY/giphy.gif') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
     }
+
+    /* Dark overlay to improve readability */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6); /* Adjust opacity as needed */
+      z-index: 1;
+    }
+
+    /* Form container */
     .form-container {
-      background: #1e1e1e;
+      position: relative;
+      z-index: 2;
+      background: rgba(30, 30, 30, 0.9);
       padding: 2.5rem;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
       animation: fadeIn 0.5s ease-in-out;
       width: 400px;
+      max-width: 90%;
+      backdrop-filter: blur(10px); /* Frosted glass effect */
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
     .input-field {
       background: #2a2a2a;
       border: 1px solid #555;
@@ -33,66 +60,87 @@
       transition: all 0.3s ease-in-out;
       border-radius: 8px;
     }
+
     .input-field:focus {
       transform: scale(1.04);
       border-color: #4f46e5;
       box-shadow: 0 0 10px rgba(79, 70, 229, 0.8);
+      outline: none;
     }
-    .input-field::placeholder {
-      color: #bbb;
-    }
+
     .submit-btn {
-      background: #4f46e5;
+      background: linear-gradient(45deg, #4f46e5, #6d28d9);
       transition: all 0.3s ease-in-out;
       margin-top: 20px;
       padding: 12px;
       border-radius: 8px;
       font-size: 1rem;
+      width: 100%;
     }
+
     .submit-btn:hover {
-      background: #4338ca;
-      transform: scale(1.07);
+      background: linear-gradient(45deg, #4338ca, #5b21b6);
+      transform: scale(1.03);
     }
+
     .submit-btn:active {
-      transform: scale(0.96);
+      transform: scale(0.97);
     }
-    .label-left {
-      text-align: left;
-      display: block;
-      font-size: 0.95rem;
-      margin-bottom: 5px;
+
+    .password-container {
+      position: relative;
     }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #bbb;
+      cursor: pointer;
     }
   </style>
 </head>
-<body class="dark-mode h-full flex items-center justify-center">
-  <div class="min-h-screen flex items-center justify-center">
-    <div class="form-container text-center">
-      <h2 class="text-3xl font-bold mb-2">Create an Account</h2>
-      <p class="text-gray-400 text-base mb-4">Join us by filling in the details below.</p>
-      <form method="POST" action="/auth/register" class="space-y-4">
-        <div class="form-group">
-          <label for="username" class="label-left text-gray-300">Username</label>
-          <input placeholder="Your username" id="username" name="username" required class="input-field w-full focus:outline-none">
-        </div>
-        <div class="form-group">
-          <label for="email" class="label-left text-gray-300">Email</label>
-          <input placeholder="you@example.com" id="email" name="email" required class="input-field w-full focus:outline-none">
-        </div>
-        <div class="form-group">
-          <label for="password" class="label-left text-gray-300">Password</label>
-          <input placeholder="●●●●●●●●" id="password" name="password" type="password" required class="input-field w-full focus:outline-none">
-        </div>
-        <div>
-          <button type="submit" class="submit-btn w-full text-white font-medium">Register</button>
-        </div>
-      </form>
-      <p class="text-sm text-gray-400 mt-4">Already have an account? <a href="/login" class="text-blue-400 hover:text-blue-300">Sign in</a></p>
-    </div>
+<body>
+  <div class="form-container text-center">
+    <h2 class="text-3xl font-bold mb-2">Create an Account</h2>
+    <p class="text-gray-400 text-base mb-4">Join us by filling in the details below.</p>
+    <form method="POST" action="/auth/register" class="space-y-4" id="registerForm">
+      <div class="form-group">
+        <label for="username" class="text-gray-300">Username</label>
+        <input placeholder="Your username" id="username" name="username" required class="input-field w-full">
+      </div>
+      <div class="form-group">
+        <label for="email" class="text-gray-300">Email</label>
+        <input placeholder="you@example.com" id="email" name="email" type="email" required class="input-field w-full">
+      </div>
+      <div class="form-group password-container">
+        <label for="password" class="text-gray-300">Password</label>
+        <input placeholder="●●●●●●●●" id="password" name="password" type="password" required class="input-field w-full">
+        <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">Show</button>
+      </div>
+      <div>
+        <button type="submit" class="submit-btn text-white font-medium">Register</button>
+      </div>
+    </form>
+    <p class="text-sm text-gray-400 mt-4">Already have an account? <a href="/login" class="text-blue-400 hover:text-blue-300">Sign in</a></p>
   </div>
+
+  <script>
+    // Toggle password visibility
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password');
+      const toggleButton = document.querySelector('.toggle-password');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleButton.textContent = 'Hide';
+      } else {
+        passwordInput.type = 'password';
+        toggleButton.textContent = 'Show';
+      }
+    }
+  </script>
 </body>
 </html>
