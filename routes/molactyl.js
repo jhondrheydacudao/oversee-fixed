@@ -261,7 +261,7 @@ router.get("/transfercoins", async (req, res) => {
       req.query;
   
     // Check for missing parameters
-    if (!imageName || !ram || !cpu || !ports || !nodeId || !name || !user || !primary) {
+    if (!imageName || !ram || !cpu || !disk || !ports || !nodeId || !name || !user || !primary) {
       return res.status(400).json({ error: 'Missing parameters' });
     }
   
@@ -273,6 +273,7 @@ router.get("/transfercoins", async (req, res) => {
       const user_resources = await db.get('resources-' + req.user.email);
       const availableRam = user_resources.ram;
       const availableCore = user_resources.cores;
+      const availabledisk =user_resources.disk
       // Compare the requested RAM with the available RAM
       if (requestedRam > availableRam) {
         return res.redirect('../create-server?err=NOT_ENOUGH_RESOURCES');
@@ -302,6 +303,7 @@ router.get("/transfercoins", async (req, res) => {
         image,
         requestedRam,
         cpu,
+        disk
         ports,
         name,
         node,
@@ -318,6 +320,7 @@ router.get("/transfercoins", async (req, res) => {
         image,
         requestedRam,
         cpu,
+        disk
         ports,
         primary,
         name,
@@ -351,8 +354,10 @@ router.get("/transfercoins", async (req, res) => {
 
     const instanceRam = instance.Memory;
     const instanceCPU = instance.Cpu;
+    const instancedisk = Instance.disk
     userResources.ram = (userResources.ram || 0) + instanceRam;
     userResources.cores = (userResources.cores || 0) + instanceCPU;
+    userResources.disk = (userResources.disk || 0) + instancedisk;
     await db.set(resourcesKey, userResources);
     await deleteInstance(instance);
     res.redirect('/dashboard?err=DELETED');
@@ -486,6 +491,7 @@ async function updateDatabaseWithNewInstance(
   image,
   memory,
   cpu,
+  disk,
   ports,
   primary,
   name,
@@ -506,6 +512,7 @@ async function updateDatabaseWithNewInstance(
     VolumeId: Id,
     Memory: parseInt(memory),
     Cpu: parseInt(cpu),
+    disk: parseInt(cpu),
     Ports: ports,
     Primary: primary,
     Image: image,
