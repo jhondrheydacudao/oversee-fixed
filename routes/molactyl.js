@@ -273,7 +273,6 @@ router.get("/transfercoins", async (req, res) => {
       const user_resources = await db.get('resources-' + req.user.email);
       const availableRam = user_resources.ram;
       const availableCore = user_resources.cores;
-      const availabledisk =user_resources.disk
       // Compare the requested RAM with the available RAM
       if (requestedRam > availableRam) {
         return res.redirect('../create-server?err=NOT_ENOUGH_RESOURCES');
@@ -285,11 +284,10 @@ router.get("/transfercoins", async (req, res) => {
   
       const newRam = availableRam - requestedRam; // Deduct the requested RAM from available RAM
       const newCpu = availableCore - requestedCore; // Deduct the requested cores from available cores
-      const newdisk = availabledisk - requesteddisk;
       
       const newResources = {
           ram: newRam,
-          disk: newdisk, // Assuming 10 GiB disk is always allocated
+          disk: 0, // Assuming 10 GiB disk is always allocated
           cores: newCpu,
       };
       
@@ -303,7 +301,6 @@ router.get("/transfercoins", async (req, res) => {
         image,
         requestedRam,
         cpu,
-        disk
         ports,
         name,
         node,
@@ -320,7 +317,6 @@ router.get("/transfercoins", async (req, res) => {
         image,
         requestedRam,
         cpu,
-        disk
         ports,
         primary,
         name,
@@ -354,10 +350,8 @@ router.get("/transfercoins", async (req, res) => {
 
     const instanceRam = instance.Memory;
     const instanceCPU = instance.Cpu;
-    const instancedisk = Instance.disk
     userResources.ram = (userResources.ram || 0) + instanceRam;
-    userResources.cores = (userResources.cores || 0) + instanceCPU;
-    userResources.disk = (userResources.disk || 0) + instancedisk;
+    userResources.cores = (userResources.cores || 0) + insurancecores;
     await db.set(resourcesKey, userResources);
     await deleteInstance(instance);
     res.redirect('/dashboard?err=DELETED');
@@ -491,7 +485,6 @@ async function updateDatabaseWithNewInstance(
   image,
   memory,
   cpu,
-  disk,
   ports,
   primary,
   name,
@@ -512,7 +505,6 @@ async function updateDatabaseWithNewInstance(
     VolumeId: Id,
     Memory: parseInt(memory),
     Cpu: parseInt(cpu),
-    disk: parseInt(cpu),
     Ports: ports,
     Primary: primary,
     Image: image,
