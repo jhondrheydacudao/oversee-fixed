@@ -14,7 +14,8 @@
     </div>
 
     <div id="nodeTable" class="mt-6 w-full overflow-x-auto">
-      <table class="w-full text-left border-collapse">
+      <input type="text" id="searchInput" class="w-full p-2 mt-4 rounded bg-gray-800 text-white border border-gray-700" placeholder="Search users...">
+      <table class="w-full text-left border-collapse mt-4">
         <thead class="border-b text-white">
           <tr>
             <th class="py-2 px-4 font-medium"><%= req.translations.name %></th>
@@ -62,28 +63,82 @@
         
         <label class="block text-gray-300 text-sm mt-4">Role:</label>
         <select id="userAdmin" class="w-full mt-2 p-2 rounded bg-gray-800 text-white border border-gray-700">
-          <option value="true">Admin</option>
-          <option value="false">User</option>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
+          <!-- More roles if needed -->
+          <option value="moderator">Moderator</option>
         </select>
         
         <button id="createNodeBtn" type="button" class="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg">Create</button>
       </form>
     </div>
   </div>
+
+  <!-- Success and Error Messages -->
+  <div id="message" class="hidden p-4 bg-green-500 text-white rounded-lg mt-4">
+    User created successfully!
+  </div>
+  <div id="errorMessage" class="hidden p-4 bg-red-500 text-white rounded-lg mt-4">
+    Error: Failed to create user.
+  </div>
+
+  <!-- Deletion Confirmation Modal -->
+  <div id="confirmDeleteModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg">
+      <p>Are you sure you want to remove this user?</p>
+      <div class="flex justify-end mt-4">
+        <button id="confirmDeleteBtn" class="bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-lg">Yes, Remove</button>
+        <button id="cancelDeleteBtn" class="ml-4 bg-gray-300 hover:bg-gray-200 text-black py-2 px-4 rounded-lg">Cancel</button>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script>
+  // Toggle create user form visibility
   document.getElementById("createButton").addEventListener("click", function () {
     document.getElementById("nodeTable").classList.toggle("hidden");
     document.getElementById("nodeForm").classList.toggle("hidden");
   });
-  
+
+  // Search functionality for the user table
+  document.getElementById("searchInput").addEventListener("input", function () {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#nodeTable tbody tr");
+
+    rows.forEach(row => {
+      const username = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
+      const email = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+      
+      if (username.includes(searchTerm) || email.includes(searchTerm)) {
+        row.classList.remove("hidden");
+      } else {
+        row.classList.add("hidden");
+      }
+    });
+  });
+
+  // Handle user creation
   document.getElementById("createNodeBtn").addEventListener("click", function () {
     const username = document.getElementById("userName").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("userPass").value;
-    const admin = document.getElementById("userAdmin").value === "true";
+    const admin = document.getElementById("userAdmin").value === "admin";
 
+    // Simple validation
+    if (!username || !email || !password) {
+      displayError("All fields are required.");
+      return;
+    }
+
+    // Email format validation
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      displayError("Please enter a valid email.");
+      return;
+    }
+
+    // Proceed with creating the user
     fetch("/users/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -91,24 +146,50 @@
     })
     .then(response => response.ok ? response.json() : Promise.reject("Failed to create user"))
     .then(() => {
-      alert("User created successfully");
-      window.location.reload();
+      displayMessage("User created successfully!");
+      setTimeout(() => window.location.reload(), 2000);
     })
-    .catch(error => alert("Error: " + error));
+    .catch(error => displayError("Error: " + error));
   });
 
+  // Show success message
+  function displayMessage(message) {
+    const messageElement = document.getElementById("message");
+    messageElement.textContent = message;
+    messageElement.classList.remove("hidden");
+  }
+
+  // Show error message
+  function displayError(message) {
+    const errorMessageElement = document.getElementById("errorMessage");
+    errorMessageElement.textContent = message;
+    errorMessageElement.classList.remove("hidden");
+  }
+
+  // Handle user removal with confirmation modal
   document.querySelectorAll(".removeButton").forEach(button => {
     button.addEventListener("click", function () {
       const userId = this.dataset.userId;
-      if (!confirm("Are you sure you want to remove this user?")) return;
 
-      fetch("/user/delete", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId })
-      })
-      .then(response => response.ok ? window.location.reload() : Promise.reject("Failed to delete user"))
-      .catch(error => alert("Error: " + error));
+      // Show the confirmation modal
+      document.getElementById("confirmDeleteModal").classList.remove("hidden");
+
+      // Cancel deletion
+      document.getElementById("cancelDeleteBtn").addEventListener("click", function () {
+        document.getElementById("confirmDeleteModal").classList.add("hidden");
+      });
+
+      // Confirm deletion
+      document.getElementById("confirmDeleteBtn").addEventListener("click", function () {
+        fetch("/user/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId })
+        })
+        .then(response => response.ok ? window.location.reload() : Promise.reject("Failed to delete user"))
+        .catch(error => alert("Error: " + error));
+        document.getElementById("confirmDeleteModal").classList.add("hidden");
+      });
     });
   });
 </script>
