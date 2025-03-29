@@ -284,7 +284,7 @@ router.get("/transfercoins", async (req, res) => {
   
       const newRam = availableRam - requestedRam; // Deduct the requested RAM from available RAM
       const newCpu = availableCore - requestedCore; // Deduct the requested cores from available cores
-      const new disk = availabledisk - requesteddisk;
+      const newdisk = availabledisk - requesteddisk;
       
       const newResources = {
           ram: newRam,
