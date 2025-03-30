@@ -1,4 +1,10 @@
 {
-  "button-color": "bg-blue-500 hover:bg-blue-600 text-neutral-100",
-  "paneltheme-color": "bg-[#1f1e1e]"
+  // Color scheme for buttons
+  "button-color": {
+    "default": "bg-blue-500 text-neutral-100",
+    "hover": "hover:bg-blue-600"
+  },
+  
+  // Color scheme for panels
+  "panel-theme-color": "bg-[#1f1e1e]"
 }
