@@ -772,6 +772,26 @@ function updateCpuUsage(stats) {
     }
 }
 
+    if (isNaN(cpuUsagePercent)) {
+        cpuUsagePercent = 0;
+    }
+
+    // Update CPU usage text content
+    document.getElementById('cpuUsage').textContent = `${cpuUsagePercent}%`;
+
+    // Select the container div for CPU usage
+    const cpuUsageContainer = document.getElementById('cpuUsageContainer');
+
+    // Remove the bg-white/5 class and add bg-red-500 if CPU usage exceeds 90%
+    if (parseFloat(cpuUsagePercent) >= 90) {
+        cpuUsageContainer.classList.remove('bg-white/5');
+        cpuUsageContainer.classList.add('bg-red-500');
+    } else {
+        cpuUsageContainer.classList.remove('bg-red-500');
+        cpuUsageContainer.classList.add('bg-white/5');
+    }
+}
+
 // Update Disk Usage
 function updateDiskUsage(stats) {
     const diskUsageRaw = parseFloat(stats.volumeSize); // in MB
