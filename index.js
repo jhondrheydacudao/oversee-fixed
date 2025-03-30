@@ -37,7 +37,6 @@ const translationMiddleware = require('./handlers/translation');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const theme = require('./storage/theme.json');
-const discordAuthRoutes = require('./auth/discordauth');
 
 
 const sqlite = require("better-sqlite3");
