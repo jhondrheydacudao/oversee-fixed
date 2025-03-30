@@ -3,56 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create an Account</title>
-  <link href="../assets/tailwind.min.css" rel="stylesheet">
-  <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
+  <title><%= name %></title>
+  <link href="../assets/tailwind.css" rel="stylesheet">
   <link rel="preconnect" href="https://cdn.fontshare.com">
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@500,300,600,400,700&display=swap" rel="stylesheet">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' data:;">
+
+  <!-- Favicon (Logo in Browser Tab) -->
+  <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
+
   <style>
-    /* Background GIF with overlay */
     body {
-      background: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW1peGU5bG1nYWNpbXc2eTEwc2FvZnBpeW83eHEyZWxpanFwNXViayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2PWBLDJ2KtB1X6o9vY/giphy.gif') no-repeat center center fixed;
-      background-size: cover;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      position: relative;
+      background: #0d0d0d;
+      color: white;
       overflow: hidden;
     }
-
-    /* Dark overlay to improve readability */
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6); /* Adjust opacity as needed */
-      z-index: 1;
-    }
-
-    /* Form container */
     .form-container {
-      position: relative;
-      z-index: 2;
-      background: rgba(30, 30, 30, 0.9);
+      background: #1e1e1e;
       padding: 2.5rem;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
       animation: fadeIn 0.5s ease-in-out;
       width: 400px;
-      max-width: 90%;
-      backdrop-filter: blur(10px); /* Frosted glass effect */
+      position: relative;
+      z-index: 10;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .input-field {
       background: #2a2a2a;
       border: 1px solid #555;
@@ -61,78 +39,123 @@
       transition: all 0.3s ease-in-out;
       border-radius: 8px;
     }
-
     .input-field:focus {
       transform: scale(1.04);
       border-color: #4f46e5;
       box-shadow: 0 0 10px rgba(79, 70, 229, 0.8);
-      outline: none;
     }
-
     .submit-btn {
-      background: linear-gradient(45deg, #4f46e5, #6d28d9);
+      background: #4f46e5;
       transition: all 0.3s ease-in-out;
       margin-top: 20px;
       padding: 12px;
       border-radius: 8px;
       font-size: 1rem;
-      width: 100%;
     }
-
     .submit-btn:hover {
-      background: linear-gradient(45deg, #4338ca, #5b21b6);
-      transform: scale(1.03);
+      background: #4338ca;
+      transform: scale(1.07);
     }
-
     .submit-btn:active {
-      transform: scale(0.97);
+      transform: scale(0.96);
     }
 
-    .password-container {
-      position: relative;
+    /* Background Animation */
+    .particles-container {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      overflow: hidden;
     }
-
-    .toggle-password {
+    .particle {
       position: absolute;
-      top: 50%;
-      right: 12px;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #bbb;
-      cursor: pointer;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: float 5s infinite ease-in-out;
+    }
+    @keyframes float {
+      0% { transform: translateY(0); opacity: 0.8; }
+      50% { transform: translateY(-20px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 0.8; }
+    }
+    .error-message {
+      color: red;
+      font-size: 0.85rem;
+      margin-top: 5px;
     }
   </style>
 </head>
-<body>
-  <div class="form-container text-center">
-    <h2 class="text-3xl font-bold mb-2">Create an Account</h2>
-    <p class="text-gray-400 text-base mb-4">Join us by filling in the details below.</p>
-    <form method="POST" action="/auth/register" class="space-y-4" id="registerForm">
-      <div class="form-group">
-        <label for="username" class="text-gray-300">Username</label>
-        <input placeholder="Your username" id="username" name="username" required class="input-field w-full">
-      </div>
-      <div class="form-group">
-        <label for="email" class="text-gray-300">Email</label>
-        <input placeholder="you@example.com" id="email" name="email" type="email" required class="input-field w-full">
-      </div>
-      <div class="form-group password-container">
-        <label for="password" class="text-gray-300">Password</label>
-        <input placeholder="●●●●●●●●" id="password" name="password" type="password" required class="input-field w-full">
-        <button type="button" class="toggle-password" aria-label="Toggle password visibility" onclick="togglePasswordVisibility()">Show</button>
-      </div>
-      <div>
-        <button type="button" class="submit-btn text-white font-medium bg-blue-500 hover:bg-blue-400" onclick="window.location.href='/auth/discord'">
-          Register with Discord
-        </button>
-      </div>
-      <div>
-        <button type="submit" class="submit-btn text-white font-medium">Register</button>
-      </div>
-    </form>
-    <p class="text-sm text-gray-400 mt-4">Already have an account? <a href="/login" class="text-blue-400 hover:text-blue-300">Sign in</a></p>
+<body class="h-full flex items-center justify-center">
+  <div class="particles-container"></div> <!-- Background animation container -->
+
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="form-container text-center">
+      
+      <!-- Website Logo -->
+      <img src="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj" 
+           alt="Website Logo" class="w-20 mx-auto mb-4 rounded-full shadow-lg">
+      
+      <h2 class="text-3xl font-bold mb-2">Create an Account</h2>
+      <p class="text-gray-400 text-base mb-4">Join us by filling in the details below.</p>
+      <form method="POST" action="/auth/register" class="space-y-4" onsubmit="return validatePasswords()">
+        <div class="form-group">
+          <label for="username" class="text-gray-300">Username</label>
+          <input placeholder="Your username" id="username" name="username" required class="input-field w-full focus:outline-none">
+        </div>
+        <div class="form-group">
+          <label for="email" class="text-gray-300">Email</label>
+          <input placeholder="you@example.com" id="email" name="email" required class="input-field w-full focus:outline-none">
+        </div>
+        <div class="form-group">
+          <label for="password" class="text-gray-300">Password</label>
+          <input placeholder="●●●●●●●●" id="password" name="password" type="password" required class="input-field w-full focus:outline-none">
+        </div>
+        <div class="form-group">
+          <label for="confirm-password" class="text-gray-300">Confirm Password</label>
+          <input placeholder="●●●●●●●●" id="confirm-password" name="confirm-password" type="password" required class="input-field w-full focus:outline-none">
+          <p id="error-message" class="error-message hidden">Passwords do not match!</p>
+        </div>
+        <div>
+          <button type="submit" class="submit-btn w-full text-white font-medium">Register</button>
+        </div>
+      </form>
+      <p class="text-sm text-gray-400 mt-4">Already have an account? <a href="/login" class="text-blue-400 hover:text-blue-300">Sign in</a></p>
+    </div>
   </div>
-</script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const particleContainer = document.querySelector(".particles-container");
+
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement("div");
+        particle.classList.add("particle");
+        particle.style.left = `${Math.random() * 100}vw`;
+        particle.style.top = `${Math.random() * 100}vh`;
+        particle.style.animationDuration = `${5 + Math.random() * 5}s`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        particleContainer.appendChild(particle);
+      }
+    });
+
+    function validatePasswords() {
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+      const errorMessage = document.getElementById("error-message");
+
+      if (password !== confirmPassword) {
+        errorMessage.classList.remove("hidden");
+        return false; // Prevent form submission
+      } else {
+        errorMessage.classList.add("hidden");
+        return true;
+      }
+    }
+  </script>
 </body>
 </html>
