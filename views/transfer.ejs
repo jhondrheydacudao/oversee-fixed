@@ -4,8 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>transfer coins - Executorx Hosting Panel</title>
-    <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
-    <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .fade-in {
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes buttonHover {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+    .button-hover:hover {
+      animation: buttonHover 0.3s forwards;
+    }
+  </style>
 </head>
 <body>
 
@@ -15,13 +31,13 @@
   
     <div class="flex justify-between items-center w-full mx-auto pb-4">
         <!-- Welcome text and subtext on the left -->
-        <div class="flex flex-col">
+        <div class="flex flex-col fade-in">
             <h1 class="text-xl font-semibold mb-0.5" style="font-family: 'Cabin';">Transfer coins</h1>
             <p class="text-gray-400 text-md">Give your friends some coins cause why not?.</p>
         </div>
 
         <!-- Breadcrumbs on the right -->
-        <nav aria-label="Breadcrumb" class="inline-flex py-2 px-4 rounded-xl bg-white/5 transition-colors duration-200">
+        <nav aria-label="Breadcrumb" class="inline-flex py-2 px-4 rounded-xl bg-white/5 transition-colors duration-200 fade-in">
             <ol role="list" class="flex items-center space-x-2">
                 <li>
                     <a href="/dashboard" class="text-sm flex items-center gap-2 text-zinc-400 hover:text-zinc-200 transition-colors duration-200" aria-current="false">
@@ -72,21 +88,20 @@
     </div>
 
     <!-- AFK Page Content -->
-    <div class="mt-24 flex justify-center">
+    <div class="mt-24 flex justify-center fade-in">
         <div class="text-center">
             <div class="mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-16 w-16 bg-white/5 p-1.5 rounded-xl border border-white/10 mx-auto text-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-16 w-16 bg-white/5 p-1.5 rounded-xl border border-white/10">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                   </svg>
-                               
             </div>
-            <h2 class="text-2xl font-bold mb-4">Transfer</h2>
-            <p class="text-gray-400 mb-6">Send coins to other users on the platform</p>
+            <h2 class="text-2xl font-bold mb-4 fade-in">Transfer</h2>
+            <p class="text-gray-400 mb-6 fade-in">Send coins to other users on the platform</p>
     
             <form>
                 <div class="space-y-4">
                     <div>
-                        <label for="coins" class="block text-sm font-medium text-gray-200">Coins</label>
+                        <label for="coins" class="block text-sm font-medium text-gray-200 fade-in">Coins</label>
                         <input 
                             type="text" 
                             id="coins" 
@@ -94,7 +109,7 @@
                             placeholder="Enter coins">
                     </div>
                     <div>
-                        <label for="receiver-email" class="block text-sm font-medium text-gray-200">Receiver Email</label>
+                        <label for="receiver-email" class="block text-sm font-medium text-gray-200 fade-in">Receiver Email</label>
                         <input 
                             type="text" 
                             id="receiver-email" 
@@ -105,7 +120,7 @@
             </form>
             <div class="border-t border-white/5 mb-4">
                 <br />
-                    <a onclick="sendcoins()" target="_blank" class="cursor-pointer transition ease-in-out group relative flex justify-center rounded-full border border-transparent py-2 px-6 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                    <a onclick="sendcoins()" target="_blank" class="cursor-pointer transition ease-in-out group relative flex justify-center rounded-full border border-transparent py-2 px-6 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 button-hover">
                         Transfer
                     </a>
                 </div>
@@ -127,6 +142,5 @@
     }
 </script>
 
-        <!-- Footer -->
-        <%- include('./components/footer') %>
-    </div>
+<!-- Footer -->
+<%- include('./components/footer') %>
