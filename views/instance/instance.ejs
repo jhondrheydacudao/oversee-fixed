@@ -813,6 +813,33 @@ function updateDiskUsage(stats) {
         diskUsageContainer.classList.add('bg-white/5');
     }
 }
+
+<!-- Add this block within your existing code -->
+<div id="uptimeContainer" class="bg-white/5 rounded-lg p-6">
+    <h3 class="text-sm font-semibold mb-2 text-white/60">Server Uptime</h3>
+    <div class="flex items-center">
+        <span id="uptime" class="text-sm font-medium"></span>
+    </div>
+</div>
+
+<!-- Add this script within your existing <script> block -->
+<script>
+async function fetchUptime() {
+    try {
+        const response = await fetch('/api/uptime'); // Adjust the endpoint as necessary
+        const data = await response.json();
+        document.getElementById('uptime').textContent = data.uptime;
+    } catch (error) {
+        console.error('Error fetching uptime:', error);
+    }
+}
+
+// Call the fetchUptime function periodically to update the uptime
+setInterval(fetchUptime, 30000); // Adjust the interval as necessary, e.g., every 30 seconds
+
+// Fetch the initial uptime on page load
+document.addEventListener('DOMContentLoaded', fetchUptime);
+</script>
         
         function updateStatus(stats) {
             const statusElement = document.getElementById('status');
