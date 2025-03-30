@@ -6,9 +6,9 @@ const router = express.Router();
 
 // Configure the Discord strategy for use by Passport.
 passport.use(new DiscordStrategy({
-    clientID: process.env.DISCORD_CLIENT_ID,
-    clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    callbackURL: "http://yourdomain.com/auth/discord/callback",
+    clientID: 1355707227419185266,
+    clientSecret: SoJCGfOH1iy7EunihWc0Z74EdaY-P6Pr,
+    callbackURL: "https://discord.com/oauth2/authorize?client_id=1355707227419185266&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fdiscord%2Fcallback&scope=identify+email",
     scope: ['identify', 'email']
   },
   function(accessToken, refreshToken, profile, done) {
