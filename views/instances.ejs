@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>users servers - Executorx Hosting Panel</title>
-    <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
-    <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 
@@ -19,7 +19,7 @@
     <div class="flex items-center gap-3">
       <% if (req.user.admin) { %>
         <div class="relative inline-block" x-data="{ open: false }">
-          <button @click="open = !open" class="flex items-center gap-2 px-6 py-2 text-white bg-indigo-600 rounded-lg shadow-md transition-all duration-200 hover:scale-95 hover:bg-indigo-800 focus:ring-2 focus:ring-indigo-800">
+          <button @click="open = !open" class="flex items-center gap-2 px-6 py-2 text-white bg-blue-600 rounded-lg shadow-md transition-all duration-200 hover:scale-95 hover:bg-blue-800 focus:outline-none">
             <span>Filter</span>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="size-4 transition-transform" :class="open ? 'rotate-180' : ''">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -45,6 +45,8 @@
           <th class="px-4 py-4 text-left text-sm font-semibold text-white">Status</th>
           <th class="px-4 py-4 text-left text-sm font-semibold text-white">RAM Usage</th>
           <th class="px-4 py-4 text-left text-sm font-semibold text-white">CPU Usage</th>
+          <th class="px-4 py-4 text-left text-sm font-semibold text-white">Disk Usage</th>
+          <th class="px-4 py-4 text-left text-sm font-semibold text-white">Uptime</th>
           <th class="px-4 py-4 text-left text-sm font-semibold text-white">IP Address</th>
         </tr>
       </thead>
@@ -68,6 +70,15 @@
               <span id="cpuUsagetext_<%= instance.Id %>" class="text-xs text-gray-400">0%</span>
             </td>
             <td class="px-4 py-4 text-sm text-gray-300">
+              <div class="relative w-32 h-3 bg-gray-700 rounded-md overflow-hidden">
+                <div id="diskUsageBar_<%= instance.Id %>" class="absolute top-0 left-0 h-full bg-red-500 transition-all duration-500 ease-in-out" style="width: 0%;"></div>
+              </div>
+              <span id="diskUsagetext_<%= instance.Id %>" class="text-xs text-gray-400">0%</span>
+            </td>
+            <td class="px-4 py-4 text-sm text-gray-300">
+              <span id="uptime_<%= instance.Id %>" class="text-xs text-gray-400">0 days 0 hours</span>
+            </td>
+            <td class="px-4 py-4 text-sm text-gray-300">
               <span class="px-3 py-1 text-xs font-medium text-gray-200 bg-gray-700 rounded-lg"><%= instance.Node.address %>:<%= instance.Primary %></span>
             </td>
           </tr>
@@ -77,11 +88,17 @@
               statusElement.textContent = status;
               statusElement.className = `px-3 py-1 text-xs font-bold rounded-lg ${status === 'Online' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`;
             }
-            function updateUsageBars(instanceId, ramUsage, cpuUsage) {
+            function updateUsageBars(instanceId, ramUsage, cpuUsage, diskUsage) {
               document.getElementById(`ramUsageBar_${instanceId}`).style.width = `${ramUsage}%`;
               document.getElementById(`ramUsagetext_${instanceId}`).textContent = `${ramUsage}%`;
               document.getElementById(`cpuUsageBar_${instanceId}`).style.width = `${cpuUsage}%`;
               document.getElementById(`cpuUsagetext_${instanceId}`).textContent = `${cpuUsage}%`;
+              document.getElementById(`diskUsageBar_${instanceId}`).style.width = `${diskUsage}%`;
+              document.getElementById(`diskUsagetext_${instanceId}`).textContent = `${diskUsage}%`;
+            }
+            function updateUptime(instanceId, uptime) {
+              const uptimeElement = document.getElementById(`uptime_${instanceId}`);
+              uptimeElement.textContent = `${uptime.days} days ${uptime.hours} hours`;
             }
             function initStatsWebSocket(instanceId) {
               const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -91,7 +108,13 @@
                   const stats = JSON.parse(event.data);
                   const ramUsage = stats.memory_stats?.limit ? ((stats.memory_stats.usage / stats.memory_stats.limit) * 100).toFixed(2) : 0;
                   const cpuUsage = stats.cpu_stats?.system_cpu_usage ? ((stats.cpu_stats.cpu_usage.total_usage / stats.cpu_stats.system_cpu_usage) * 100).toFixed(2) : 0;
-                  updateUsageBars(instanceId, ramUsage, cpuUsage);
+                  const diskUsage = stats.disk_stats?.total ? ((stats.disk_stats.used / stats.disk_stats.total) * 100).toFixed(2) : 0;
+                  const uptime = {
+                    days: Math.floor(stats.uptime / (24 * 60 * 60)),
+                    hours: Math.floor((stats.uptime % (24 * 60 * 60)) / (60 * 60))
+                  };
+                  updateUsageBars(instanceId, ramUsage, cpuUsage, diskUsage);
+                  updateUptime(instanceId, uptime);
                   updateInstanceStatus(instanceId, ramUsage > 1 ? "Online" : "Offline");
                 } catch (e) {
                   console.error('Invalid stats data:', event.data);
@@ -107,3 +130,5 @@
     </table>
   </div>
 </main>
+</body>
+</html>
