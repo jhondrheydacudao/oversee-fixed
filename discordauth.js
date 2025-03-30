@@ -1,6 +1,5 @@
 const passport = require('passport');
 const DiscordStrategy = require('passport-discord').Strategy;
-const User = require('../models/user'); // Adjust the path as needed
 const express = require('express');
 const router = express.Router();
 
