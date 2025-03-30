@@ -1,5 +1,11 @@
 const axios = require('axios');
 
+// Utility function to create the URL
+function createURL(instance, endpoint, filename = '', path = '') {
+    const query = path ? `?path=${encodeURIComponent(path)}` : '';
+    return `http://${instance.Node.address}:${instance.Node.port}/fs/${instance.VolumeId}/files${endpoint}${filename}${query}`;
+}
+
 /**
  * Fetches files for a given instance.
  * @param {Object} instance - The instance object.
@@ -7,26 +13,20 @@ const axios = require('axios');
  * @returns {Promise<Array>} - The list of files.
  */
 async function fetchFiles(instance, path = '') {
-    const query = path ? `?path=${path}` : '';
-    const url = `http://${instance.Node.address}:${instance.Node.port}/fs/${instance.VolumeId}/files${query}`;
-    
+    const url = createURL(instance, '', '', path);
     try {
-    const response = await axios.get(url, {
-        auth: {
-            username: 'Skyport',
-            password: instance.Node.apiKey
-        }
-    });
-
-    return response.data.files || [];
+        const response = await axios.get(url, {
+            auth: {
+                username: process.env.SKYPORT_USERNAME || 'Skyport',
+                password: instance.Node.apiKey
+            }
+        });
+        return response.data.files || [];
     } catch (error) {
+        console.error('Error fetching files:', error);
         return [];
     }
 }
-
-
-
-
 
 /**
  * Fetches content of a specific file.
@@ -36,23 +36,19 @@ async function fetchFiles(instance, path = '') {
  * @returns {Promise<string>} - The content of the file.
  */
 async function fetchFileContent(instance, filename, path = '') {
-    const query = path ? `?path=${path}` : '';
-    const url = `http://${instance.Node.address}:${instance.Node.port}/fs/${instance.VolumeId}/files/view/${filename}${query}`;
-    
-
+    const url = createURL(instance, '/view/', filename, path);
     try {
-    const response = await axios.get(url, {
-        auth: {
-            username: 'Skyport',
-            password: instance.Node.apiKey
-        }
-    });
-    return response.data.content;
+        const response = await axios.get(url, {
+            auth: {
+                username: process.env.SKYPORT_USERNAME || 'Skyport',
+                password: instance.Node.apiKey
+            }
+        });
+        return response.data.content;
     } catch (error) {
         console.error('Error fetching file content:', error);
         return null;
     }
-
 }
 
 /**
@@ -64,17 +60,14 @@ async function fetchFileContent(instance, filename, path = '') {
  * @returns {Promise<Object>} - The response from the server.
  */
 async function createFile(instance, filename, content, path = '') {
-    const query = path ? `?path=${encodeURIComponent(path)}` : '';
-    const url = `http://${instance.Node.address}:${instance.Node.port}/fs/${instance.VolumeId}/files/create/${filename}${query}`;
-    
+    const url = createURL(instance, '/create/', filename, path);
     try {
         const response = await axios.post(url, { content }, {
             auth: {
-                username: 'Skyport',
+                username: process.env.SKYPORT_USERNAME || 'Skyport',
                 password: instance.Node.apiKey
             }
         });
-
         return response.data;
     } catch (error) {
         console.error('Error creating file:', error);
@@ -91,17 +84,19 @@ async function createFile(instance, filename, content, path = '') {
  * @returns {Promise<Object>} - The response from the server.
  */
 async function editFile(instance, filename, content, path = '') {
-    const query = path ? `?path=${path}` : '';
-    const url = `http://${instance.Node.address}:${instance.Node.port}/fs/${instance.VolumeId}/files/edit/${filename}${query}`;
-    
-    const response = await axios.post(url, { content }, {
-        auth: {
-            username: 'Skyport',
-            password: instance.Node.apiKey
-        }
-    });
-
-    return response.data;
+    const url = createURL(instance, '/edit/', filename, path);
+    try {
+        const response = await axios.post(url, { content }, {
+            auth: {
+                username: process.env.SKYPORT_USERNAME || 'Skyport',
+                password: instance.Node.apiKey
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error editing file:', error);
+        return null;
+    }
 }
 
 /**
@@ -112,17 +107,19 @@ async function editFile(instance, filename, content, path = '') {
  * @returns {Promise<Object>} - The response from the server.
  */
 async function deleteFile(instance, filename, path = '') {
-    const query = path ? `?path=${path}` : '';
-    const url = `http://${instance.Node.address}:${instance.Node.port}/fs/${instance.VolumeId}/files/delete/${filename}${query}`;
-    
-    const response = await axios.delete(url, {
-        auth: {
-            username: 'Skyport',
-            password: instance.Node.apiKey
-        }
-    });
-
-    return response.data;
+    const url = createURL(instance, '/delete/', filename, path);
+    try {
+        const response = await axios.delete(url, {
+            auth: {
+                username: process.env.SKYPORT_USERNAME || 'Skyport',
+                password: instance.Node.apiKey
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting file:', error);
+        return null;
+    }
 }
 
 module.exports = {
