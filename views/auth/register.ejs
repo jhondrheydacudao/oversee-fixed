@@ -12,7 +12,7 @@
   <style>
     /* Background GIF with overlay */
     body {
-      background: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW1peGU5bG1nYWNpbXc2eTEwc2FvZnBpeW83eHEyZWxpanFwNXViayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2PWBLDJ2KtB1X6o9vY/giphy.gif');
+      background: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW1peGU5bG1nYWNpbXc2eTEwc2FvZnBpeW83eHEyZWxpanFwNXViayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2PWBLDJ2KtB1X6o9vY/giphy.gif') no-repeat center center fixed;
       background-size: cover;
       display: flex;
       align-items: center;
@@ -123,12 +123,16 @@
         <button type="button" class="toggle-password" aria-label="Toggle password visibility" onclick="togglePasswordVisibility()">Show</button>
       </div>
       <div>
+        <button type="button" class="submit-btn text-white font-medium bg-blue-500 hover:bg-blue-400" onclick="window.location.href='/auth/discord'">
+          Register with Discord
+        </button>
+      </div>
+      <div>
         <button type="submit" class="submit-btn text-white font-medium">Register</button>
       </div>
     </form>
     <p class="text-sm text-gray-400 mt-4">Already have an account? <a href="/login" class="text-blue-400 hover:text-blue-300">Sign in</a></p>
   </div>
-
-  <script src="../assets/scripts.js"></script>
+</script>
 </body>
 </html>
