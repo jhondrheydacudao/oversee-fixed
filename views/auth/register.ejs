@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create an Account</title>
-  <link href="../assets/tailwind.css" rel="stylesheet">
+  <link href="../assets/tailwind.min.css" rel="stylesheet">
   <link rel="icon" type="image/png" href="https://yt3.googleusercontent.com/IVqzx0L3Ffpapttg-WK5yU9frk4AIVKixHnmmQjQ7RLrt4e66-7Ox6srKG_QVat5ceEq-98-s9s=s160-c-k-c0x00ffffff-no-rj">
   <link rel="preconnect" href="https://cdn.fontshare.com">
   <link href="https://api.fontshare.com/v2/css?f[]=general-sans@500,300,600,400,700&display=swap" rel="stylesheet">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' data:;">
   <style>
     /* Background GIF with overlay */
     body {
-      background: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW1peGU5bG1nYWNpbXc2eTEwc2FvZnBpeW83eHEyZWxpanFwNXViayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2PWBLDJ2KtB1X6o9vY/giphy.gif') no-repeat center center fixed;
+      background: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW1peGU5bG1nYWNpbXc2eTEwc2FvZnBpeW83eHEyZWxpanFwNXViayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2PWBLDJ2KtB1X6o9vY/giphy.gif');
       background-size: cover;
       display: flex;
       align-items: center;
@@ -119,7 +120,7 @@
       <div class="form-group password-container">
         <label for="password" class="text-gray-300">Password</label>
         <input placeholder="●●●●●●●●" id="password" name="password" type="password" required class="input-field w-full">
-        <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">Show</button>
+        <button type="button" class="toggle-password" aria-label="Toggle password visibility" onclick="togglePasswordVisibility()">Show</button>
       </div>
       <div>
         <button type="submit" class="submit-btn text-white font-medium">Register</button>
@@ -128,19 +129,6 @@
     <p class="text-sm text-gray-400 mt-4">Already have an account? <a href="/login" class="text-blue-400 hover:text-blue-300">Sign in</a></p>
   </div>
 
-  <script>
-    // Toggle password visibility
-    function togglePasswordVisibility() {
-      const passwordInput = document.getElementById('password');
-      const toggleButton = document.querySelector('.toggle-password');
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleButton.textContent = 'Hide';
-      } else {
-        passwordInput.type = 'password';
-        toggleButton.textContent = 'Show';
-      }
-    }
-  </script>
+  <script src="../assets/scripts.js"></script>
 </body>
 </html>
